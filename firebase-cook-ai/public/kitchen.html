@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- This is Squarespace. --><!-- seabass-whale-w37g -->
 <!--<base href="">--><base href=".">
-
+<!-- Include the session-check.js file -->
+<script type="module">
+  import { checkUserSession } from 'session-check.js';
+  
+  // Call the session checking function when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+      checkUserSession();
+  });
+</script>
 <title>Kitchen — CookAI</title>
 <meta http-equiv="Accept-CH" content="Sec-CH-UA-Platform-Version, Sec-CH-UA-Model"><link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
 <link rel="canonical" href="https://cook-ai-4fc88.web.app/kitchen.html">
