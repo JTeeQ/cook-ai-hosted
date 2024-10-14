@@ -1,3 +1,32 @@
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+      apiKey: "AIzaSyB1BRYzsdICZqEjCLei35VbGaJIs0Ns3x0",
+      authDomain: "cook-ai-4fc88.firebaseapp.com",
+      projectId: "cook-ai-4fc88",
+      storageBucket: "cookai-acb31.appspot.com",
+      messagingSenderId: "463225148454",
+      appId: "1:21163147226:web:04ccf8a23cc82d78468ae3"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Check the authentication state
+  onAuthStateChanged(auth, (user) => {
+      if (user) {
+          console.log("User is signed in:", user);
+          // You can place your protected content here
+      } else {
+          console.log("No user is signed in. Redirecting to login.");
+          window.location.href = "/login.html"; // Redirect to your login page
+      }
+  });
+</script>
 <!DOCTYPE html>
 <!-- saved from url=(0014)about:internet -->
 <html xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en-US" class="yui3-js-enabled wf-adonisweb-n4-active wf-adonisweb-n7-active wf-adonisweb-i4-active wf-adonisweb-i7-active wf-adellesans-n4-active wf-active js flexbox canvas canvastext webgl no-touch hashchange history draganddrop rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms no-csstransforms3d csstransitions video audio svg inlinesvg svgclippaths" id="yui_3_17_2_1_1713238320745_76"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="origin-trial" content="Az520Inasey3TAyqLyojQa8MnmCALSEU29yQFW8dePZ7xQTvSt73pHazLFTK5f7SyLUJSo2uKLesEtEa9aUYcgMAAACPeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkRpc2FibGVUaGlyZFBhcnR5U3RvcmFnZVBhcnRpdGlvbmluZyIsImV4cGlyeSI6MTcyNTQwNzk5OSwiaXNTdWJkb21haW4iOnRydWUsImlzVGhpcmRQYXJ0eSI6dHJ1ZX0=">
@@ -7,24 +36,24 @@
 <!--<base href="">--><base href=".">
 
 <title>Kitchen — CookAI</title>
-<meta http-equiv="Accept-CH" content="Sec-CH-UA-Platform-Version, Sec-CH-UA-Model"><link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
-<link rel="canonical" href="https://cook-ai-4fc88.web.app/kitchen.html">
+<meta http-equiv="Accept-CH" content="Sec-CH-UA-Platform-Version, Sec-CH-UA-Model"><link rel="icon" type="image/x-icon" href="../static/img/favicon.png">
+<link rel="canonical" href="kitchen.html">
 <meta property="og:site_name" content="CookAI">
 <meta property="og:title" content="Kitchen — CookAI">
-<meta property="og:url" content="https://cook-ai-4fc88.web.app/kitchen.html">
+<meta property="og:url" content="kitchen.html">
 <meta property="og:type" content="website">
 <meta itemprop="name" content="Kitchen — CookAI">
-<meta itemprop="url" content="https://cook-ai-4fc88.web.app/kitchen.html">
+<meta itemprop="url" content="kitchen.html">
 <meta name="twitter:title" content="Kitchen — CookAI">
-<meta name="twitter:url" content="https://cook-ai-4fc88.web.app/kitchen.html">
+<meta name="twitter:url" content="kitchen.html">
 <meta name="twitter:card" content="summary">
 <meta name="description" content="">
 <link rel="preconnect" href="https://images.squarespace-cdn.com/">
-<script type="text/javascript" async="" src="./static/css/Kitchen — CookAI_files/recaptcha__en.js.download" crossorigin="anonymous" integrity="sha384-eZG8e4nRp0gEpRB75JBNzhS0vVseDRBVprGQYHJNXJCYwHihzdLYpvGhxa6VAhNb"></script><script type="text/javascript" src="./static/css/Kitchen — CookAI_files/zG5IZ3ohcJ0S02EKzNtWhByg1UL0CeKt812svkLwM9Jfe1vJXnX1IyvhF2jtFRZLFRj3jD48FejkFRIDZeIaFAjtZcwawcIae6MKfcBqdhoTSkuaZAJKfhBqZAUCZPuDjAoDH6qJN8bbMg6IJMJ7fbRomgMMeMS6MKG4fVy9IMMj2KMfH6qJr8bbMg6sJMJ7f6RtyMIbMs.download"></script>
+<script type="text/javascript" async="" src="../static/css/Kitchen — CookAI_files/recaptcha__en.js.download" crossorigin="anonymous" integrity="sha384-eZG8e4nRp0gEpRB75JBNzhS0vVseDRBVprGQYHJNXJCYwHihzdLYpvGhxa6VAhNb"></script><script type="text/javascript" src="../static/css/Kitchen — CookAI_files/zG5IZ3ohcJ0S02EKzNtWhByg1UL0CeKt812svkLwM9Jfe1vJXnX1IyvhF2jtFRZLFRj3jD48FejkFRIDZeIaFAjtZcwawcIae6MKfcBqdhoTSkuaZAJKfhBqZAUCZPuDjAoDH6qJN8bbMg6IJMJ7fbRomgMMeMS6MKG4fVy9IMMj2KMfH6qJr8bbMg6sJMJ7f6RtyMIbMs.download"></script>
 <style type="text/css">@font-face{font-family:adonis-web;src:url(https://use.typekit.net/af/807888/00000000000000000001007d/27/l?subset_id=2&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/807888/00000000000000000001007d/27/d?subset_id=2&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/807888/00000000000000000001007d/27/a?subset_id=2&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:adonis-web;src:url(https://use.typekit.net/af/d99a65/000000000000000000010080/27/l?subset_id=2&fvd=n7&v=3) format("woff2"),url(https://use.typekit.net/af/d99a65/000000000000000000010080/27/d?subset_id=2&fvd=n7&v=3) format("woff"),url(https://use.typekit.net/af/d99a65/000000000000000000010080/27/a?subset_id=2&fvd=n7&v=3) format("opentype");font-weight:700;font-style:normal;font-stretch:normal;font-display:auto;}@font-face{font-family:adonis-web;src:url(https://use.typekit.net/af/0082da/00000000000000000001007f/27/l?subset_id=2&fvd=i4&v=3) format("woff2"),url(https://use.typekit.net/af/0082da/00000000000000000001007f/27/d?subset_id=2&fvd=i4&v=3) format("woff"),url(https://use.typekit.net/af/0082da/00000000000000000001007f/27/a?subset_id=2&fvd=i4&v=3) format("opentype");font-weight:400;font-style:italic;font-stretch:normal;font-display:auto;}@font-face{font-family:adonis-web;src:url(https://use.typekit.net/af/4e9399/000000000000000000010081/27/l?subset_id=2&fvd=i7&v=3) format("woff2"),url(https://use.typekit.net/af/4e9399/000000000000000000010081/27/d?subset_id=2&fvd=i7&v=3) format("woff"),url(https://use.typekit.net/af/4e9399/000000000000000000010081/27/a?subset_id=2&fvd=i7&v=3) format("opentype");font-weight:700;font-style:italic;font-stretch:normal;font-display:auto;}@font-face{font-family:adelle-sans;src:url(https://use.typekit.net/af/a96fc4/00000000000000007735a1de/30/l?subset_id=2&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/a96fc4/00000000000000007735a1de/30/d?subset_id=2&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/a96fc4/00000000000000007735a1de/30/a?subset_id=2&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;font-stretch:normal;font-display:auto;}</style><script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='./static/css/Kitchen — CookAI_files/css2.css') }}">
-<script type="text/javascript" crossorigin="anonymous" defer="defer" nomodule="nomodule" src="./static/css/Kitchen — CookAI_files/legacy.js.download"></script>
-<script type="text/javascript" crossorigin="anonymous" defer="defer" src="./static/css/Kitchen — CookAI_files/modern.js.download"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='../static/css/Kitchen — CookAI_files/css2.css') }}">
+<script type="text/javascript" crossorigin="anonymous" defer="defer" nomodule="nomodule" src="../static/css/Kitchen — CookAI_files/legacy.js.download"></script>
+<script type="text/javascript" crossorigin="anonymous" defer="defer" src="../static/css/Kitchen — CookAI_files/modern.js.download"></script>
 <script type="text/javascript">SQUARESPACE_ROLLUPS = {};</script>
 <script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/extract-css-runtime-11996ee30e36bfe38c2f-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-extract_css_runtime');</script>
 <script crossorigin="anonymous" src="./static/css/Kitchen — CookAI_files/extract-css-runtime-11996ee30e36bfe38c2f-min.en-US.js.download" defer=""></script><script>(function(rollups, name) { if (!rollups[name]) { rollups[name] = {}; } rollups[name].js = ["//assets.squarespace.com/universal/scripts-compressed/extract-css-moment-js-vendor-6f117db4eb7fd4392375-min.en-US.js"]; })(SQUARESPACE_ROLLUPS, 'squarespace-extract_css_moment_js_vendor');</script>
@@ -37,7 +66,7 @@
 <!-- End of Squarespace Headers -->
     
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/Kitchen — CookAI_files/static.css') }}">
-  <link rel="stylesheet" type="text/css" href="./static/css/Kitchen — CookAI_files/dc3ececddc5363a3dc01-min.en-US.css"><style id="forms-grecaptcha-badge-style">.grecaptcha-badge { visibility: hidden; }</style>
+  <link rel="stylesheet" type="text/css" href="../static/css/Kitchen — CookAI_files/dc3ececddc5363a3dc01-min.en-US.css"><style id="forms-grecaptcha-badge-style">.grecaptcha-badge { visibility: hidden; }</style>
 <!-- Styles for Loading Overlay and Notification Banner -->
 	<style>
         #loading-overlay {
@@ -110,9 +139,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   </head>
-<link rel="stylesheet" type="text/css" href="./static/css/Fridge — CookAI_files/static.css">
-<link rel="stylesheet" type="text/css" href="./static/css/Fridge — CookAI_files/site.css">
-<link rel="stylesheet" type="text/css" href="./static/css/Fridge — CookAI_files/css2.css">
+<link rel="stylesheet" type="text/css" href="../static/css/Fridge — CookAI_files/static.css">
+<link rel="stylesheet" type="text/css" href="../static/css/Fridge — CookAI_files/site.css">
+<link rel="stylesheet" type="text/css" href="../static/css/Fridge — CookAI_files/css2.css">
 <!--    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='./static/css/static.css') }}"> -->
 
   <body id="collection-660dda4828143b34e09cd153" class="primary-button-style-solid primary-button-shape-square secondary-button-style-solid secondary-button-shape-square tertiary-button-style-solid tertiary-button-shape-square form-use-theme-colors form-field-style-solid form-field-shape-square form-field-border-all form-field-checkbox-type-icon form-field-checkbox-fill-solid form-field-checkbox-color-inverted form-field-checkbox-shape-square form-field-checkbox-layout-stack form-field-radio-type-icon form-field-radio-fill-solid form-field-radio-color-normal form-field-radio-shape-pill form-field-radio-layout-stack form-field-survey-fill-solid form-field-survey-color-normal form-field-survey-shape-pill form-field-hover-focus-outline form-submit-button-style-label header-overlay-alignment-center header-width-full tweak-transparent-header  tweak-fixed-header-style-scroll-back tweak-blog-alternating-side-by-side-width-inset tweak-blog-alternating-side-by-side-image-aspect-ratio-32-standard tweak-blog-alternating-side-by-side-text-alignment-left tweak-blog-alternating-side-by-side-read-more-style-hide tweak-blog-alternating-side-by-side-image-text-alignment-middle tweak-blog-alternating-side-by-side-delimiter-bullet tweak-blog-alternating-side-by-side-meta-position-below-excerpt tweak-blog-alternating-side-by-side-primary-meta-categories tweak-blog-alternating-side-by-side-secondary-meta-date tweak-blog-alternating-side-by-side-excerpt-show tweak-blog-basic-grid-width-full tweak-blog-basic-grid-image-aspect-ratio-32-standard tweak-blog-basic-grid-text-alignment-left tweak-blog-basic-grid-delimiter-bullet tweak-blog-basic-grid-image-placement-above tweak-blog-basic-grid-read-more-style-show tweak-blog-basic-grid-primary-meta-categories tweak-blog-basic-grid-secondary-meta-date tweak-blog-basic-grid-excerpt-show tweak-blog-item-width-narrow tweak-blog-item-text-alignment-left tweak-blog-item-meta-position-below-title tweak-blog-item-show-categories tweak-blog-item-show-date   tweak-blog-item-delimiter-bullet tweak-blog-masonry-width-inset tweak-blog-masonry-text-alignment-center tweak-blog-masonry-primary-meta-categories tweak-blog-masonry-secondary-meta-date tweak-blog-masonry-meta-position-top tweak-blog-masonry-read-more-style-show tweak-blog-masonry-delimiter-space tweak-blog-masonry-image-placement-above tweak-blog-masonry-excerpt-hide tweak-blog-side-by-side-width-full tweak-blog-side-by-side-image-placement-left tweak-blog-side-by-side-image-aspect-ratio-11-square tweak-blog-side-by-side-primary-meta-categories tweak-blog-side-by-side-secondary-meta-date tweak-blog-side-by-side-meta-position-top tweak-blog-side-by-side-text-alignment-left tweak-blog-side-by-side-image-text-alignment-middle tweak-blog-side-by-side-read-more-style-show tweak-blog-side-by-side-delimiter-bullet tweak-blog-side-by-side-excerpt-show tweak-blog-single-column-width-full tweak-blog-single-column-text-alignment-center tweak-blog-single-column-image-placement-above tweak-blog-single-column-delimiter-bullet tweak-blog-single-column-read-more-style-show tweak-blog-single-column-primary-meta-categories tweak-blog-single-column-secondary-meta-date tweak-blog-single-column-meta-position-top tweak-blog-single-column-content-full-post tweak-events-stacked-width-full tweak-events-stacked-height-large  tweak-events-stacked-show-thumbnails tweak-events-stacked-thumbnail-size-32-standard tweak-events-stacked-date-style-with-text tweak-events-stacked-show-time tweak-events-stacked-show-location  tweak-events-stacked-show-excerpt  tweak-global-animations-enabled tweak-global-animations-complexity-level-detailed tweak-global-animations-animation-style-fade tweak-global-animations-animation-type-fade tweak-global-animations-animation-curve-ease tweak-portfolio-grid-basic-width-full tweak-portfolio-grid-basic-height-large tweak-portfolio-grid-basic-image-aspect-ratio-11-square tweak-portfolio-grid-basic-text-alignment-left tweak-portfolio-grid-basic-hover-effect-fade tweak-portfolio-grid-overlay-width-full tweak-portfolio-grid-overlay-height-large tweak-portfolio-grid-overlay-image-aspect-ratio-11-square tweak-portfolio-grid-overlay-text-placement-center tweak-portfolio-grid-overlay-show-text-after-hover tweak-portfolio-index-background-link-format-stacked tweak-portfolio-index-background-width-full tweak-portfolio-index-background-height-large  tweak-portfolio-index-background-vertical-alignment-middle tweak-portfolio-index-background-horizontal-alignment-center tweak-portfolio-index-background-delimiter-none tweak-portfolio-index-background-animation-type-fade tweak-portfolio-index-background-animation-duration-medium tweak-portfolio-hover-follow-layout-inline  tweak-portfolio-hover-follow-delimiter-forward-slash tweak-portfolio-hover-follow-animation-type-fade tweak-portfolio-hover-follow-animation-duration-medium tweak-portfolio-hover-static-layout-stacked  tweak-portfolio-hover-static-delimiter-forward-slash tweak-portfolio-hover-static-animation-type-scale-up tweak-portfolio-hover-static-animation-duration-medium tweak-product-basic-item-product-variant-display-dropdown tweak-product-basic-item-width-full tweak-product-basic-item-gallery-aspect-ratio-34-three-four-vertical tweak-product-basic-item-text-alignment-left tweak-product-basic-item-navigation-breadcrumbs tweak-product-basic-item-content-alignment-top tweak-product-basic-item-gallery-design-slideshow tweak-product-basic-item-gallery-placement-left tweak-product-basic-item-thumbnail-placement-side tweak-product-basic-item-click-action-none tweak-product-basic-item-hover-action-none tweak-product-basic-item-variant-picker-layout-dropdowns tweak-products-width-full tweak-products-image-aspect-ratio-11-square tweak-products-text-alignment-left  tweak-products-price-show tweak-products-nested-category-type-top tweak-products-category-title tweak-products-header-text-alignment-middle tweak-products-breadcrumbs image-block-poster-text-alignment-center image-block-card-content-position-center image-block-card-text-alignment-left image-block-overlap-content-position-center image-block-overlap-text-alignment-left image-block-collage-content-position-center image-block-collage-text-alignment-left image-block-stack-text-alignment-left hide-opentable-icons opentable-style-dark tweak-product-quick-view-button-style-floating tweak-product-quick-view-button-position-bottom tweak-product-quick-view-lightbox-excerpt-display-truncate tweak-product-quick-view-lightbox-show-arrows tweak-product-quick-view-lightbox-show-close-button tweak-product-quick-view-lightbox-controls-weight-light native-currency-code-usd collection-type-page collection-660dda4828143b34e09cd153 collection-layout-default mobile-style-available sqs-seven-one
@@ -133,7 +162,7 @@
     <div id="siteWrapper" class="clearfix site-wrapper">
       
         <div id="floatingCart" class="floating-cart hidden">
-          <a href="https://cook-ai-4fc88.web.app/cart" class="icon icon--stroke icon--fill icon--cart sqs-custom-cart">
+          <a href="/cart" class="icon icon--stroke icon--fill icon--cart sqs-custom-cart">
             <span class="Cart-inner">
               
 
@@ -451,7 +480,7 @@
 
     <div class="header-announcement-bar-wrapper">
       
-      <a href="https://cook-ai-4fc88.web.app/kitchen.html#page" class="header-skip-link sqs-button-element--primary">
+      <a href="kitchen.html#page" class="header-skip-link sqs-button-element--primary">
         Skip to Content
       </a>
       
@@ -563,7 +592,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection header-nav-item--homepage">
-      <a href="https://cook-ai-4fc88.web.app/" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0s;">
+      <a href="../index.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0s;">
         Home
       </a>
     </div>
@@ -574,7 +603,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection header-nav-item--active">
-      <a href="https://cook-ai-4fc88.web.app/kitchen.html" data-animation-role="header-element" aria-current="page" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0214286s;">
+      <a href="kitchen.html" data-animation-role="header-element" aria-current="page" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0214286s;">
         Kitchen
       </a>
     </div>
@@ -585,7 +614,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="https://cook-ai-4fc88.web.app/fridge.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0428571s;">
+      <a href="fridge.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0428571s;">
         Fridge
       </a>
     </div>
@@ -605,9 +634,9 @@
                   <div class="header-title preFade fadeIn" data-animation-role="header-element" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0642857s;">
                     
                       <div class="header-title-logo">
-                        <a href="https://cook-ai-4fc88.web.app/" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0857143s;">
+                        <a href="/" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0857143s;">
                         
-<img elementtiming="nbf-header-logo-desktop" src="./static/img/logo.png" alt="CookAI" style="display:block" fetchpriority="high" loading="eager" decoding="async" data-loader="raw">
+<img elementtiming="nbf-header-logo-desktop" src="../static/img/logo.png" alt="CookAI" style="display:block" fetchpriority="high" loading="eager" decoding="async" data-loader="raw">
 
                         </a>
                       </div>
@@ -701,7 +730,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection header-nav-item--homepage">
-      <a href="https://cook-ai-4fc88.web.app/" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.128571s;">
+      <a href="../index.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.128571s;">
         Home
       </a>
     </div>
@@ -712,7 +741,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection header-nav-item--active">
-      <a href="https://cook-ai-4fc88.web.app/kitchen.html" data-animation-role="header-element" aria-current="page" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.15s;">
+      <a href="kitchen.html" data-animation-role="header-element" aria-current="page" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.15s;">
         Kitchen
       </a>
     </div>
@@ -723,7 +752,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="https://cook-ai-4fc88.web.app/fridge.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.171429s;">
+      <a href="fridge.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.171429s;">
         Fridge
       </a>
     </div>
@@ -743,9 +772,9 @@
                   <div class="header-title preFade" data-animation-role="header-element" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.192857s;">
                     
                       <div class="header-title-logo">
-                        <a href="https://cook-ai-4fc88.web.app/" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.214286s;">
+                        <a href="/" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.214286s;">
                         
-<img elementtiming="nbf-header-logo-desktop" src="./static/css/Kitchen — CookAI_files/logo.png" alt="CookAI" style="display:block" fetchpriority="high" loading="eager" decoding="async" data-loader="raw">
+<img elementtiming="nbf-header-logo-desktop" src="../static/css/Kitchen — CookAI_files/logo.png" alt="CookAI" style="display:block" fetchpriority="high" loading="eager" decoding="async" data-loader="raw">
 
                         </a>
                       </div>
@@ -1079,7 +1108,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection header-menu-nav-item--homepage">
-              <a href="https://cook-ai-4fc88.web.app/">
+              <a href="../index.html">
                 <div class="header-menu-nav-item-content">
                   Home
                 </div>
@@ -1093,7 +1122,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection header-menu-nav-item--active">
-              <a href="https://cook-ai-4fc88.web.app/kitchen.html" aria-current="page">
+              <a href="kitchen.html" aria-current="page">
                 <div class="header-menu-nav-item-content">
                   Kitchen
                 </div>
@@ -1107,7 +1136,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection">
-              <a href="https://cook-ai-4fc88.web.app/fridge.html">
+              <a href="fridge.html">
                 <div class="header-menu-nav-item-content">
                   Fridge
                 </div>
@@ -2094,7 +2123,7 @@
             
             
             
-            <img data-stretch="false" data-src="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png" data-image="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png" data-image-dimensions="250x250" data-image-focal-point="0.5,0.5" alt="" data-load="false" elementtiming="system-image-block" src="./static/css/Kitchen — CookAI_files/logo(1).png" width="250" height="250" sizes="(max-width: 640px) 100vw, (max-width: 767px) 100vw, 25vw" style="display:block;object-fit: contain; object-position: 50% 50%" srcset="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=100w 100w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=300w 300w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=500w 500w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=750w 750w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=1000w 1000w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=1500w 1500w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=2500w 2500w" loading="lazy" decoding="async" data-loader="sqs">
+            <img data-stretch="false" data-src="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png" data-image="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png" data-image-dimensions="250x250" data-image-focal-point="0.5,0.5" alt="" data-load="false" elementtiming="system-image-block" src="../static/css/Kitchen — CookAI_files/logo(1).png" width="250" height="250" sizes="(max-width: 640px) 100vw, (max-width: 767px) 100vw, 25vw" style="display:block;object-fit: contain; object-position: 50% 50%" srcset="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=100w 100w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=300w 300w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=500w 500w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=750w 750w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=1000w 1000w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=1500w 1500w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=2500w 2500w" loading="lazy" decoding="async" data-loader="sqs">
 
             
               
@@ -2141,7 +2170,7 @@
 </div></div></div><div class="fe-block fe-block-3387748b39c2822d81bd" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-3387748b39c2822d81bd"><div class="sqs-block-content preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.45s;">
 
 <div class="sqs-html-content">
-  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.471429s;" class="preFade fadeIn"><strong>Navigation</strong></h4><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.492857s;"><a href="https://cook-ai-4fc88.web.app">Home</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.514286s;"><a href="https://cook-ai-4fc88.web.app/kitchen.html" target="">Kitchen</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.535714s;"><a href="https://cook-ai-4fc88.web.app/fridge.html">Fridge</a></p><p class="sqsrte-small preFade" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.557143s;"></p>
+  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.471429s;" class="preFade fadeIn"><strong>Navigation</strong></h4><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.492857s;"><a href="../index.html">Home</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.514286s;"><a href="kitchen.html" target="">Kitchen</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.535714s;"><a href="fridge.html">Fridge</a></p><p class="sqsrte-small preFade" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.557143s;"></p>
 </div>
 
 
@@ -2211,9 +2240,9 @@
       
     </div>
 
-    <script defer="defer" src="./static/css/Kitchen — CookAI_files/site-bundle.c60096393cff060396b454574afa2699.js.download" type="text/javascript"></script>
+    <script defer="defer" src="../static/css/Kitchen — CookAI_files/site-bundle.c60096393cff060396b454574afa2699.js.download" type="text/javascript"></script>
     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display:none" data-usage="social-icons-svg"><symbol id="instagram-unauth-icon" viewBox="0 0 64 64"><path d="M46.91,25.816c-0.073-1.597-0.326-2.687-0.697-3.641c-0.383-0.986-0.896-1.823-1.73-2.657c-0.834-0.834-1.67-1.347-2.657-1.73c-0.954-0.371-2.045-0.624-3.641-0.697C36.585,17.017,36.074,17,32,17s-4.585,0.017-6.184,0.09c-1.597,0.073-2.687,0.326-3.641,0.697c-0.986,0.383-1.823,0.896-2.657,1.73c-0.834,0.834-1.347,1.67-1.73,2.657c-0.371,0.954-0.624,2.045-0.697,3.641C17.017,27.415,17,27.926,17,32c0,4.074,0.017,4.585,0.09,6.184c0.073,1.597,0.326,2.687,0.697,3.641c0.383,0.986,0.896,1.823,1.73,2.657c0.834,0.834,1.67,1.347,2.657,1.73c0.954,0.371,2.045,0.624,3.641,0.697C27.415,46.983,27.926,47,32,47s4.585-0.017,6.184-0.09c1.597-0.073,2.687-0.326,3.641-0.697c0.986-0.383,1.823-0.896,2.657-1.73c0.834-0.834,1.347-1.67,1.73-2.657c0.371-0.954,0.624-2.045,0.697-3.641C46.983,36.585,47,36.074,47,32S46.983,27.415,46.91,25.816z M44.21,38.061c-0.067,1.462-0.311,2.257-0.516,2.785c-0.272,0.7-0.597,1.2-1.122,1.725c-0.525,0.525-1.025,0.85-1.725,1.122c-0.529,0.205-1.323,0.45-2.785,0.516c-1.581,0.072-2.056,0.087-6.061,0.087s-4.48-0.015-6.061-0.087c-1.462-0.067-2.257-0.311-2.785-0.516c-0.7-0.272-1.2-0.597-1.725-1.122c-0.525-0.525-0.85-1.025-1.122-1.725c-0.205-0.529-0.45-1.323-0.516-2.785c-0.072-1.582-0.087-2.056-0.087-6.061s0.015-4.48,0.087-6.061c0.067-1.462,0.311-2.257,0.516-2.785c0.272-0.7,0.597-1.2,1.122-1.725c0.525-0.525,1.025-0.85,1.725-1.122c0.529-0.205,1.323-0.45,2.785-0.516c1.582-0.072,2.056-0.087,6.061-0.087s4.48,0.015,6.061,0.087c1.462,0.067,2.257,0.311,2.785,0.516c0.7,0.272,1.2,0.597,1.725,1.122c0.525,0.525,0.85,1.025,1.122,1.725c0.205,0.529,0.45,1.323,0.516,2.785c0.072,1.582,0.087,2.056,0.087,6.061S44.282,36.48,44.21,38.061z M32,24.297c-4.254,0-7.703,3.449-7.703,7.703c0,4.254,3.449,7.703,7.703,7.703c4.254,0,7.703-3.449,7.703-7.703C39.703,27.746,36.254,24.297,32,24.297z M32,37c-2.761,0-5-2.239-5-5c0-2.761,2.239-5,5-5s5,2.239,5,5C37,34.761,34.761,37,32,37z M40.007,22.193c-0.994,0-1.8,0.806-1.8,1.8c0,0.994,0.806,1.8,1.8,1.8c0.994,0,1.8-0.806,1.8-1.8C41.807,22.999,41.001,22.193,40.007,22.193z"></path></symbol><symbol id="instagram-unauth-mask" viewBox="0 0 64 64"><path d="M43.693,23.153c-0.272-0.7-0.597-1.2-1.122-1.725c-0.525-0.525-1.025-0.85-1.725-1.122c-0.529-0.205-1.323-0.45-2.785-0.517c-1.582-0.072-2.056-0.087-6.061-0.087s-4.48,0.015-6.061,0.087c-1.462,0.067-2.257,0.311-2.785,0.517c-0.7,0.272-1.2,0.597-1.725,1.122c-0.525,0.525-0.85,1.025-1.122,1.725c-0.205,0.529-0.45,1.323-0.516,2.785c-0.072,1.582-0.087,2.056-0.087,6.061s0.015,4.48,0.087,6.061c0.067,1.462,0.311,2.257,0.516,2.785c0.272,0.7,0.597,1.2,1.122,1.725s1.025,0.85,1.725,1.122c0.529,0.205,1.323,0.45,2.785,0.516c1.581,0.072,2.056,0.087,6.061,0.087s4.48-0.015,6.061-0.087c1.462-0.067,2.257-0.311,2.785-0.516c0.7-0.272,1.2-0.597,1.725-1.122s0.85-1.025,1.122-1.725c0.205-0.529,0.45-1.323,0.516-2.785c0.072-1.582,0.087-2.056,0.087-6.061s-0.015-4.48-0.087-6.061C44.143,24.476,43.899,23.682,43.693,23.153z M32,39.703c-4.254,0-7.703-3.449-7.703-7.703s3.449-7.703,7.703-7.703s7.703,3.449,7.703,7.703S36.254,39.703,32,39.703z M40.007,25.793c-0.994,0-1.8-0.806-1.8-1.8c0-0.994,0.806-1.8,1.8-1.8c0.994,0,1.8,0.806,1.8,1.8C41.807,24.987,41.001,25.793,40.007,25.793z M0,0v64h64V0H0z M46.91,38.184c-0.073,1.597-0.326,2.687-0.697,3.641c-0.383,0.986-0.896,1.823-1.73,2.657c-0.834,0.834-1.67,1.347-2.657,1.73c-0.954,0.371-2.044,0.624-3.641,0.697C36.585,46.983,36.074,47,32,47s-4.585-0.017-6.184-0.09c-1.597-0.073-2.687-0.326-3.641-0.697c-0.986-0.383-1.823-0.896-2.657-1.73c-0.834-0.834-1.347-1.67-1.73-2.657c-0.371-0.954-0.624-2.044-0.697-3.641C17.017,36.585,17,36.074,17,32c0-4.074,0.017-4.585,0.09-6.185c0.073-1.597,0.326-2.687,0.697-3.641c0.383-0.986,0.896-1.823,1.73-2.657c0.834-0.834,1.67-1.347,2.657-1.73c0.954-0.371,2.045-0.624,3.641-0.697C27.415,17.017,27.926,17,32,17s4.585,0.017,6.184,0.09c1.597,0.073,2.687,0.326,3.641,0.697c0.986,0.383,1.823,0.896,2.657,1.73c0.834,0.834,1.347,1.67,1.73,2.657c0.371,0.954,0.624,2.044,0.697,3.641C46.983,27.415,47,27.926,47,32C47,36.074,46.983,36.585,46.91,38.184z M32,27c-2.761,0-5,2.239-5,5s2.239,5,5,5s5-2.239,5-5S34.761,27,32,27z"></path></symbol><symbol id="facebook-unauth-icon" viewBox="0 0 64 64"><path d="M34.1,47V33.3h4.6l0.7-5.3h-5.3v-3.4c0-1.5,0.4-2.6,2.6-2.6l2.8,0v-4.8c-0.5-0.1-2.2-0.2-4.1-0.2 c-4.1,0-6.9,2.5-6.9,7V28H24v5.3h4.6V47H34.1z"></path></symbol><symbol id="facebook-unauth-mask" viewBox="0 0 64 64"><path d="M0,0v64h64V0H0z M39.6,22l-2.8,0c-2.2,0-2.6,1.1-2.6,2.6V28h5.3l-0.7,5.3h-4.6V47h-5.5V33.3H24V28h4.6V24 c0-4.6,2.8-7,6.9-7c2,0,3.6,0.1,4.1,0.2V22z"></path></symbol></svg>
 
   
 
-<div id="yui3-css-stamp" style="position: absolute !important; visibility: hidden !important"></div><script src="./static/css/Kitchen — CookAI_files/enterprise.js.download" async=""></script><div><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; display: block; transition: right 0.3s ease 0s; position: fixed; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe title="reCAPTCHA" width="256" height="60" role="presentation" name="a-ykju2lrgroif" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="./static/css/Kitchen — CookAI_files/anchor.html"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;" src="./static/css/Kitchen — CookAI_files/saved_resource(1).html"></iframe></div></body></html>
+<div id="yui3-css-stamp" style="position: absolute !important; visibility: hidden !important"></div><script src="../static/css/Kitchen — CookAI_files/enterprise.js.download" async=""></script><div><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; display: block; transition: right 0.3s ease 0s; position: fixed; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe title="reCAPTCHA" width="256" height="60" role="presentation" name="a-ykju2lrgroif" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="../static/css/Kitchen — CookAI_files/anchor.html"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;" src="../static/css/Kitchen — CookAI_files/saved_resource(1).html"></iframe></div></body></html>

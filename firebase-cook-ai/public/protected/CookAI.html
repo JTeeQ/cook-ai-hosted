@@ -1,3 +1,32 @@
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+      apiKey: "AIzaSyB1BRYzsdICZqEjCLei35VbGaJIs0Ns3x0",
+      authDomain: "cook-ai-4fc88.firebaseapp.com",
+      projectId: "cook-ai-4fc88",
+      storageBucket: "cookai-acb31.appspot.com",
+      messagingSenderId: "463225148454",
+      appId: "1:21163147226:web:04ccf8a23cc82d78468ae3"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Check the authentication state
+  onAuthStateChanged(auth, (user) => {
+      if (user) {
+          console.log("User is signed in:", user);
+          // You can place your protected content here
+      } else {
+          console.log("No user is signed in. Redirecting to login.");
+          window.location.href = "/login.html"; // Redirect to your login page
+      }
+  });
+</script>
 <!DOCTYPE html>
 <!-- saved from url=(0014)about:internet -->
 <html xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en-US" class="yui3-js-enabled wf-adonisweb-n4-active wf-adonisweb-n7-active wf-adonisweb-i4-active wf-adonisweb-i7-active wf-adellesans-n4-active wf-active js flexbox canvas canvastext webgl no-touch hashchange history draganddrop rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms no-csstransforms3d csstransitions video audio svg inlinesvg svgclippaths" id="yui_3_17_2_1_1713238309739_76"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -6,6 +35,10 @@
     <!-- This is Squarespace. --><!-- seabass-whale-w37g -->
 <!--<base href="">--><base href=".">
 
+<<<<<<< HEAD:firebase-cook-ai/public/protected/CookAI.html
+
+=======
+>>>>>>> parent of 692d954 (session check):firebase-cook-ai/public/CookAI.html
 <title>CookAI</title>
 <meta http-equiv="Accept-CH" content="Sec-CH-UA-Platform-Version, Sec-CH-UA-Model"><link rel="icon" type="image/x-icon" href="/static/img/favicon.png">
 <link rel="canonical" href="http://127.0.0.1:5000/">
@@ -497,7 +530,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection header-nav-item--active header-nav-item--homepage">
-      <a href="http://127.0.0.1:5000/" data-animation-role="header-element" aria-current="page" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0s;">
+      <a href="../index.html" data-animation-role="header-element" aria-current="page" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0s;">
         Home
       </a>
     </div>
@@ -508,7 +541,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="http://127.0.0.1:5000/kitchen" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0153846s;">
+      <a href="kitchen.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0153846s;">
         Kitchen
       </a>
     </div>
@@ -519,7 +552,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="http://127.0.0.1:5000/fridge" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0307692s;">
+      <a href="/fridge.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0307692s;">
         Fridge
       </a>
     </div>
@@ -635,7 +668,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection header-nav-item--active header-nav-item--homepage">
-      <a href="http://127.0.0.1:5000/" data-animation-role="header-element" aria-current="page" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0923077s;">
+      <a href="../index.html" data-animation-role="header-element" aria-current="page" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0923077s;">
         Home
       </a>
     </div>
@@ -646,7 +679,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="http://127.0.0.1:5000/kitchen" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.107692s;">
+      <a href="kitchen.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.107692s;">
         Kitchen
       </a>
     </div>
@@ -657,7 +690,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="http://127.0.0.1:5000/fridge" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.123077s;">
+      <a href="fridge.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.123077s;">
         Fridge
       </a>
     </div>
@@ -677,7 +710,7 @@
                   <div class="header-title preFade" data-animation-role="header-element" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.138462s;">
                     
                       <div class="header-title-logo">
-                        <a href="http://127.0.0.1:5000/" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.153846s;">
+                        <a href="/" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.153846s;">
                         
 <img elementtiming="nbf-header-logo-desktop" src="./static/css/CookAI_files/logo.png" alt="CookAI" style="display:block" fetchpriority="high" loading="eager" decoding="async" data-loader="raw">
 
@@ -1013,7 +1046,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection header-menu-nav-item--active header-menu-nav-item--homepage">
-              <a href="http://127.0.0.1:5000/" aria-current="page">
+              <a href="../index.html" aria-current="page">
                 <div class="header-menu-nav-item-content">
                   Home
                 </div>
@@ -1027,7 +1060,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection">
-              <a href="http://127.0.0.1:5000/kitchen">
+              <a href="kitchen.html">
                 <div class="header-menu-nav-item-content">
                   Kitchen
                 </div>
@@ -1041,7 +1074,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection">
-              <a href="http://127.0.0.1:5000/fridge">
+              <a href="fridge.html">
                 <div class="header-menu-nav-item-content">
                   Fridge
                 </div>
@@ -1749,7 +1782,7 @@
 </div></div></div><div class="fe-block fe-block-d79d983afd68cbc56548"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-d79d983afd68cbc56548"><div class="sqs-block-content" id="yui_3_17_2_1_1713238309739_83">
 
 <div class="sqs-block-button-container sqs-block-button-container--center preFade" data-animation-role="button" data-alignment="center" data-button-size="medium" data-button-type="primary" id="yui_3_17_2_1_1713238309739_82" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.261538s;">
-  <a href="http://127.0.0.1:5000/kitchen" class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element" data-initialized="true">
+  <a href="kitchen.html" class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element" data-initialized="true">
     Get Cooking
   </a>
 </div>
@@ -3010,7 +3043,7 @@
 </div></div></div><div class="fe-block fe-block-3387748b39c2822d81bd" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-3387748b39c2822d81bd"><div class="sqs-block-content preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.492308s;">
 
 <div class="sqs-html-content">
-  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.507692s;" class="preFade"><strong>Navigation</strong></h4><p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.523077s;"><a href="http://127.0.0.1:5000">Home</a></p><p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.538462s;"><a href="http://127.0.0.1:5000/kitchen" target="">Kitchen</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.553846s;"><a href="http://127.0.0.1:5000/fridge">Fridge</a></p><p class="sqsrte-small preFade" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.569231s;"></p>
+  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.507692s;" class="preFade"><strong>Navigation</strong></h4><p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.523077s;"><a href="../index.html">Home</a></p><p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.538462s;"><a href="kitchen.html" target="">Kitchen</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.553846s;"><a href="fridge.html">Fridge</a></p><p class="sqsrte-small preFade" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.569231s;"></p>
 </div>
 
 
