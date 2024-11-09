@@ -6,6 +6,7 @@ import os
 import base64
 import requests
 import logging
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
@@ -31,6 +32,9 @@ def kitchen():
 def fridge():
     return render_template('Fridge — CookAI.html')
 
+def configure():
+    load_dotenv()
+
 def validate_json(file_path):
     try:
         with open(file_path, 'r') as file:
@@ -43,6 +47,7 @@ def validate_json(file_path):
     except Exception as e:
         print(f"Validation error: {e}")
         return False
+
 
 # Improved flatten_ingredients function with underscore handling
 def flatten_ingredients(ingredients):
@@ -62,7 +67,8 @@ def generate():
                 logger.error("No JSON data received")
                 return jsonify({"error": "No JSON data received"}), 400
 
-            api_key = data.get('api_key')
+            #api_key = data.get('api_key')
+            api_key = os.getenv('api_key')
             user_input = data.get('user_input')
 
             if not api_key:
@@ -240,7 +246,8 @@ def upload_haul():
 @app.route('/generate-recipes', methods=['POST'])
 def generate_recipes():
     try:
-        api_key = request.json.get('api_key_recipes')
+        #api_key = request.json.get('api_key_recipes')
+        api_key = os.getenv('api_key')
         if not api_key:
             return jsonify(error="API key is required"), 400
 
