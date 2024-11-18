@@ -496,7 +496,7 @@
       </a>
     </div>
 
-    <div class="header-nav-item header-nav-item--collection header-nav-item--active">
+    <div class="header-nav-item header-nav-item--collection">
       <a href="/protected/kitchen.html" data-animation-role="header-element" aria-current="page" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0214286s;">
         Kitchen
       </a>
@@ -594,7 +594,7 @@
     </div>
 
 
-    <div class="header-nav-item header-nav-item--collection header-nav-item--active">
+    <div class="header-nav-item header-nav-item--collection">
       <a href="/protected/kitchen.html" data-animation-role="header-element" aria-current="page" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.15s;">
         Kitchen
       </a>
@@ -941,7 +941,7 @@
               </a>
             </div>
 
-            <div class="container header-menu-nav-item header-menu-nav-item--collection header-menu-nav-item--active">
+            <div class="container header-menu-nav-item header-menu-nav-item--collection">
               <a href="/protected/kitchen.html" aria-current="page">
                 <div class="header-menu-nav-item-content">
                   Kitchen
@@ -1224,11 +1224,13 @@
   document.addEventListener("DOMContentLoaded", function() {
     const firebaseConfig = {
       apiKey: "AIzaSyB1BRYzsdICZqEjCLei35VbGaJIs0Ns3x0",
-      authDomain: "cook-ai-4fc88.firebaseapp.com", 
+      authDomain: "cook-ai-4fc88.firebaseapp.com",
+      databaseURL: "https://cook-ai-4fc88-default-rtdb.firebaseio.com",
       projectId: "cook-ai-4fc88",
-      storageBucket: "cookai-acb31.appspot.com",
-      messagingSenderId: "463225148454",
-      appId: "1:21163147226:web:04ccf8a23cc82d78468ae3"
+      storageBucket: "cook-ai-4fc88.appspot.com",
+      messagingSenderId: "21163147226",
+      appId: "1:21163147226:web:04ccf8a23cc82d78468ae3",
+      measurementId: "G-M2ZQM9EFJ6"
     };
 
     // Initializing Firebase
@@ -1275,9 +1277,9 @@
                   const haulConditionsRef = ref(storage, `users/${userId}/haulConditions.json`);
 
                   return Promise.all([
-                    uploadString(haulRef, "", 'raw', { contentType: 'application/json' }),
-                    uploadString(haulBackupRef, "", 'raw', { contentType: 'application/json' }),
-                    uploadString(haulConditionsRef, "", 'raw', { contentType: 'application/json' })
+                    uploadString(haulRef, "{}", 'raw', { contentType: 'application/json' }),
+                    uploadString(haulBackupRef, "{}", 'raw', { contentType: 'application/json' }),
+                    uploadString(haulConditionsRef, "{}", 'raw', { contentType: 'application/json' })
                   ]);
                 });
               } else {

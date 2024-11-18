@@ -502,7 +502,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="https://cook-ai-4fc88.web.app/kitchen.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0230769s;">
+      <a href="https://cook-ai-4fc88.web.app/protected/kitchen.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0230769s;">
         Kitchen
       </a>
     </div>
@@ -513,7 +513,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="https://cook-ai-4fc88.web.app/fridge.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0461538s;">
+      <a href="https://cook-ai-4fc88.web.app/protected/fridge.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0461538s;">
         Fridge
       </a>
     </div>
@@ -640,7 +640,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="https://cook-ai-4fc88.web.app/kitchen.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.161538s;">
+      <a href="https://cook-ai-4fc88.web.app/protected/kitchen.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.161538s;">
         Kitchen
       </a>
     </div>
@@ -651,7 +651,7 @@
 
   
     <div class="header-nav-item header-nav-item--collection">
-      <a href="https://cook-ai-4fc88.web.app/fridge.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.184615s;">
+      <a href="https://cook-ai-4fc88.web.app/protected/fridge.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.184615s;">
         Fridge
       </a>
     </div>
@@ -1021,7 +1021,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection">
-              <a href="https://cook-ai-4fc88.web.app/kitchen.html">
+              <a href="https://cook-ai-4fc88.web.app/protected/kitchen.html">
                 <div class="header-menu-nav-item-content">
                   Kitchen
                 </div>
@@ -1035,7 +1035,7 @@
         
           
             <div class="container header-menu-nav-item header-menu-nav-item--collection">
-              <a href="https://cook-ai-4fc88.web.app/fridge.html">
+              <a href="https://cook-ai-4fc88.web.app/protected/fridge.html">
                 <div class="header-menu-nav-item-content">
                   Fridge
                 </div>
@@ -1287,93 +1287,110 @@
   <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.276923s;" class="preFade fadeIn">Your Recipe:</h4>
 </div>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { getStorage, getDownloadURL, ref } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js';
 
+  // Firebase configuration
+  const firebaseConfig = {
+      apiKey: "AIzaSyB1BRYzsdICZqEjCLei35VbGaJIs0Ns3x0",
+      authDomain: "cook-ai-4fc88.firebaseapp.com",
+      projectId: "cook-ai-4fc88",
+      storageBucket: "cook-ai-4fc88.appspot.com",
+      messagingSenderId: "21163147226",
+      appId: "1:21163147226:web:04ccf8a23cc82d78468ae3"
+  };
 
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
+  // Check the authentication state
+  onAuthStateChanged(auth, (user) => {
+      if (user) {
+          console.log("User is signed in:", user);
+          window.rootPath = `users/${user.uid}`;
+          window.recipesPath = `users/${user.uid}/recipes.json`;
+          console.log("Generate has recipes path: ", window.recipesPath)
+      } else {
+          console.log("No user is signed in. Redirecting to login.");
+          window.location.href = "/login.html"; // Redirect to your login page
+      }
 
+    console.log("Generate has recipes path: ", window.recipesPath)
 
+    fetch('/get-recipe', {
+      method: 'POST',  // Using POST to send data
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ recipePath: recipesPath })  // Sending file path in the body
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.recipe) {
+        // Parse the recipe data and display it
+        const recipe = JSON.parse(data.recipe); // Assuming the recipe is returned as a string
+        try {
+          // Check if all required fields are present
+          if (!recipe || !recipe.title || !recipe.serving_size || !recipe.ingredients || !recipe.instructions) {
+            throw new Error('Missing required recipe fields');
+          }
+          
+          console.log("ingredients: ", recipe.ingredients)
 
+          const flattenIngredients = (ingredients) => {
+            let flattened = {};
+            for (let key in ingredients) {
+              if (Array.isArray(ingredients[key])) {
+                flattened[key] = ingredients[key].join(", ");
+              } else if (typeof ingredients[key] === 'object' && !Array.isArray(ingredients[key])) {
+                for (let subKey in ingredients[key]) {
+                  flattened[`${key} - ${subKey}`] = ingredients[key][subKey];
+                }
+              } else {
+                flattened[key] = ingredients[key];
+              }
+            }
+            return flattened;
+          };
 
+          // Flattening ingredients
+          const flattenedIngredients = flattenIngredients(recipe.ingredients);
 
+          const textElement = document.querySelector('.sqs-html-content p');
+          if (textElement) {
+            // Create content to display the recipe
+            let content = `<strong>Title:</strong> ${recipe.title}<br>`;
+            content += `<strong>Serving Size:</strong> ${recipe.serving_size}<br>`;
+            content += '<strong>Ingredients:</strong><ul>';
+            Object.entries(flattenedIngredients).forEach(([ingredient, quantity]) => {
+              content += `<li>${ingredient}: ${quantity}</li>`;
+            });
+            content += '</ul>';
+            content += '<strong>Cooking Steps:</strong><ol>';
+            recipe.instructions.forEach(step => {
+              content += `<li>${step}</li>`;
+            });
+            content += '</ol>';
 
+            textElement.innerHTML = content;
+            } else {
+              console.error("Error: textElement not found");
+            }
+        } catch (e) {
+            console.error("Error parsing the recipe:", e);
+        }
+      }
 
+    })
+    .catch(error => {
+      console.error('Error loading the generated text:', error);
+    });
+  });
 
-
-
-
-
-
-
-
-
-  
-  
-
-<script>
-	fetch('./response/out.json')
-		.then(response => {
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-			return response.json();
-		})
-		.then(data => {
-			const recipeObj = data.generated_text;
-			try {
-				// Parsing directly if generated_text is a string. If it's already an object, this step isn't necessary.
-				const parsedRecipeObj = JSON.parse(recipeObj);
-
-				// Check if all required fields are present
-				if (!parsedRecipeObj || !parsedRecipeObj.title || !parsedRecipeObj.serving_size || !parsedRecipeObj.ingredients || !parsedRecipeObj.instructions) {
-					throw new Error('Missing required recipe fields');
-				}
-
-				const flattenIngredients = (ingredients) => {
-					let flattened = {};
-					for (let key in ingredients) {
-						if (Array.isArray(ingredients[key])) {
-							flattened[key] = ingredients[key].join(", ");
-						} else if (typeof ingredients[key] === 'object' && !Array.isArray(ingredients[key])) {
-							for (let subKey in ingredients[key]) {
-								flattened[`${key} - ${subKey}`] = ingredients[key][subKey];
-							}
-						} else {
-							flattened[key] = ingredients[key];
-						}
-					}
-					return flattened;
-				};
-
-				// Flattening ingredients
-				const flattenedIngredients = flattenIngredients(parsedRecipeObj.ingredients);
-
-				const textElement = document.querySelector('.sqs-html-content p');
-				if (textElement) {
-					// Constructing content from the recipe object
-					let content = `<strong>Title:</strong> ${parsedRecipeObj.title}<br>`;
-					content += `<strong>Serving Size:</strong> ${parsedRecipeObj.serving_size}<br>`;
-					content += '<strong>Ingredients:</strong><ul>';
-					Object.entries(flattenedIngredients).forEach(([ingredient, quantity]) => {
-						content += `<li>${ingredient}: ${quantity}</li>`;
-					});
-					content += '</ul>';
-					content += '<strong>Cooking Steps:</strong><ol>';
-					parsedRecipeObj.instructions.forEach(step => {
-						content += `<li>${step}</li>`;
-					});
-					content += '</ol>';
-
-					textElement.innerHTML = content;
-				} else {
-					console.error("Error: textElement not found");
-				}
-			} catch (e) {
-				console.error("Error parsing the recipe:", e);
-			}
-		})
-		.catch(error => {
-			console.error('Error loading the generated text:', error);
-		});
 </script>
 
 
@@ -1384,35 +1401,11 @@
 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
 </div></div></div></div></div>
     </div>
   
   </div>
   
-
 
 <div class="section-divider-display" style="--stroke-thickness: 0; --stroke-dasharray: 0; --stroke-linecap: square;">
   <style>
@@ -1467,13 +1460,7 @@
 
   
 </article>
-
-
-          
-
-          
-            
-          
+     
         
       </main>
       <script type="text/javascript">
@@ -1502,17 +1489,6 @@
       
         <footer class="sections" id="footer-sections" data-footer-sections="">
   
-  
-  
-  
-  
-  
-    
-    
-
-
-  
-
 
 <section data-test="page-section" data-section-theme="light" class="page-section 
     
@@ -1766,104 +1742,23 @@
 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
 </div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1713234937181_12899" id="yui_3_17_2_1_1713239394621_70"><div class="sqs-block image-block sqs-block-image sqs-stretched sqs-text-ready" data-block-type="5" id="block-yui_3_17_2_1_1713234937181_12899"><div class="sqs-block-content preFade fadeIn" id="yui_3_17_2_1_1713239394621_69" style="height: 100%; width: 100%; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.392308s;">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-    
   
     <div class="image-block-outer-wrapper layout-caption-below design-layout-fluid image-position-center combination-animation-site-default individual-animation-site-default sqs-narrow-width animation-loaded" data-test="image-block-fluid-outer-wrapper" id="yui_3_17_2_1_1713239394621_68">
       <div class="fluid-image-animation-wrapper sqs-image sqs-block-alignment-wrapper preFade fadeIn" data-animation-role="image" id="yui_3_17_2_1_1713239394621_67" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.415385s;">
         <div class="fluid-image-container sqs-image-content" style="overflow: hidden; mask-image: -webkit-radial-gradient(center, white, black); position: relative; width: 235px; height: 100%;" id="yui_3_17_2_1_1713239394621_66">
           
-
-          
-          
-
-          
             
               <div class="content-fit" id="yui_3_17_2_1_1713239394621_65">
                 
             
-            
-            
-            
-            
-            
             <img data-stretch="false" data-src="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png" data-image="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png" data-image-dimensions="250x250" data-image-focal-point="0.5,0.5" alt="" data-load="false" elementtiming="system-image-block" src="./static/css/Generate — CookAI_files/logo(1).png" width="250" height="250" sizes="(max-width: 640px) 100vw, (max-width: 767px) 100vw, 25vw" style="display:block;object-fit: contain; object-position: 50% 50%" srcset="https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=100w 100w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=300w 300w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=500w 500w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=750w 750w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=1000w 1000w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=1500w 1500w, https://images.squarespace-cdn.com/content/v1/660c2e4f2613da75f8fc72a7/074e4d14-19e8-4a4f-9371-b27c576fff6d/logo.png?format=2500w 2500w" loading="lazy" decoding="async" data-loader="sqs">
 
-            
-              
             
             <div class="fluidImageOverlay"></div>
           
               </div>
-            
-          
 
         </div>
       </div>
@@ -1892,40 +1787,13 @@
         }
       
     </style>
-  
-
-
-  
 
 
 </div></div></div><div class="fe-block fe-block-3387748b39c2822d81bd" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-3387748b39c2822d81bd"><div class="sqs-block-content preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.438462s;">
 
 <div class="sqs-html-content">
-  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.461538s;" class="preFade fadeIn"><strong>Navigation</strong></h4><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.484615s;"><a href="https://cook-ai-4fc88.web.app">Home</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.507692s;"><a href="https://cook-ai-4fc88.web.app/kitchen.html" target="">Kitchen</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.530769s;"><a href="https://cook-ai-4fc88.web.app/fridge.html">Fridge</a></p><p class="sqsrte-small preFade fadeIn" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.553846s;"></p>
+  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.461538s;" class="preFade fadeIn"><strong>Navigation</strong></h4><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.484615s;"><a href="https://cook-ai-4fc88.web.app">Home</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.507692s;"><a href="https://cook-ai-4fc88.web.app/protected/kitchen.html" target="">Kitchen</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.530769s;"><a href="https://cook-ai-4fc88.web.app/protected/fridge.html">Fridge</a></p><p class="sqsrte-small preFade fadeIn" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.553846s;"></p>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
 
 
 </div></div></div><div class="fe-block fe-block-d85414dc152e51b5bb33" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-d85414dc152e51b5bb33"><div class="sqs-block-content preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.576923s;">
@@ -1933,29 +1801,6 @@
 <div class="sqs-html-content">
   
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
 
 
 </div></div></div></div></div>

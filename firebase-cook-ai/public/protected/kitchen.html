@@ -1,6 +1,33 @@
-<!-- Import the authentication script -->
-<script type="module" src="../static/js/auth.js"></script>
+<script type="module">
+  // import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  // import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
+  // // Firebase configuration
+  // const firebaseConfig = {
+  //     apiKey: "AIzaSyB1BRYzsdICZqEjCLei35VbGaJIs0Ns3x0",
+  //     authDomain: "cook-ai-4fc88.firebaseapp.com",
+  //     projectId: "cook-ai-4fc88",
+  //     storageBucket: "cook-ai-4fc88.appspot.com",
+  //     messagingSenderId: "21163147226",
+  //     appId: "1:21163147226:web:04ccf8a23cc82d78468ae3"
+  // };
+
+  // // Initialize Firebase
+  // const app = initializeApp(firebaseConfig);
+  // const auth = getAuth(app);
+
+  // // Check the authentication state
+  // onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //         console.log("User is signed in:", user);
+  //         window.rootPath = `users/${user.uid}`;
+  //         window.filePath = `users/${user.uid}/haul.json`;
+  //     } else {
+  //         console.log("No user is signed in. Redirecting to login.");
+  //         window.location.href = "/login.html"; // Redirect to your login page
+  //     }
+  // });
+</script>
 <!DOCTYPE html>
 <!-- saved from url=(0014)about:internet -->
 <html xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en-US" class="yui3-js-enabled wf-adonisweb-n4-active wf-adonisweb-n7-active wf-adonisweb-i4-active wf-adonisweb-i7-active wf-adellesans-n4-active wf-active js flexbox canvas canvastext webgl no-touch hashchange history draganddrop rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms no-csstransforms3d csstransitions video audio svg inlinesvg svgclippaths" id="yui_3_17_2_1_1713238320745_76"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="origin-trial" content="Az520Inasey3TAyqLyojQa8MnmCALSEU29yQFW8dePZ7xQTvSt73pHazLFTK5f7SyLUJSo2uKLesEtEa9aUYcgMAAACPeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkRpc2FibGVUaGlyZFBhcnR5U3RvcmFnZVBhcnRpdGlvbmluZyIsImV4cGlyeSI6MTcyNTQwNzk5OSwiaXNTdWJkb21haW4iOnRydWUsImlzVGhpcmRQYXJ0eSI6dHJ1ZX0=">
@@ -592,9 +619,7 @@
         Fridge
       </a>
     </div>
-    
-    <div id="user-info-container" class="header-nav-item header-nav-item--collection"></div>
-    
+  
   
   
 
@@ -1481,7 +1506,7 @@
 				<p style="text-align: center;color:white;background-color:DodgerBlue;">Recommended</p>
 				<p><b>Generate Recipes from Your Fridge</b></p>
                 <p>Don't know what to make but you have a lot in your fridge?</p>
-				<p>Get 10 random and fresh recipe ideas directly from your fridge!</p>
+				<p>Get 5 random and fresh recipe ideas directly from your fridge!</p>
             </div>
             <form id="generate-recipes-form" class="react-form-contents" novalidate>
                 <div class="field-list">
@@ -1506,7 +1531,36 @@
     <div id="recipes-container"></div>
 
     <!-- JavaScript for handling the form submission and showing the overlay -->
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1BRYzsdICZqEjCLei35VbGaJIs0Ns3x0",
+            authDomain: "cook-ai-4fc88.firebaseapp.com",
+            projectId: "cook-ai-4fc88",
+            storageBucket: "cook-ai-4fc88.appspot.com",
+            messagingSenderId: "21163147226",
+            appId: "1:21163147226:web:04ccf8a23cc82d78468ae3"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Check the authentication state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User is signed in:", user);
+                window.rootPath = `users/${user.uid}`;
+                window.filePath = `users/${user.uid}/haul.json`;
+            } else {
+                console.log("No user is signed in. Redirecting to login.");
+                window.location.href = "/login.html"; // Redirect to your login page
+            }
+        });
+        
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.getElementById("generate-form");
 
@@ -1520,17 +1574,22 @@
                 document.getElementById("loading-overlay").style.display = "flex";
 
                 // Make an AJAX request to check if haul.json exists
-                fetch('/check-haul')
+                fetch(`/check-haul?path=${encodeURIComponent(filePath)}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.exists) {
+                            let jsonData = {
+                                rootPath: window.rootPath,
+                                api_key: api_key,
+                                user_input: user_input
+                            };
                             // If the file exists, submit the form data to the generate endpoint
-                            fetch('/generate.html', {
+                            fetch('/generate', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ user_input: user_input, api_key: api_key }),
+                                body: JSON.stringify(jsonData),
                             })
                             .then(response => {
                                 if (!response.ok) {
@@ -1590,10 +1649,11 @@
                 $('#loading-overlay').show();
 
                 $.ajax({
-                    url: '/generate.html-recipes',
+                    url: '/generate-recipes',
                     method: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ api_key_recipes: apiKey }),
+                    data: JSON.stringify({ api_key_recipes: apiKey, rootPath: window.rootPath }),
+                    dataType: 'json',
                     success: function(response) {
                         console.log(response); // Debugging line to check the response structure
                         let recipesHtml = '<h2>Generated Recipes:</h2>';
