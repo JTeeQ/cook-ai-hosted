@@ -2,10 +2,84 @@
   "hosting": {
     "public": "public",
     "rewrites": [
+      
       {
-        "source": "/protected/**",
-        "function": "app"
+        "source": "/get-food-list",
+        "function": "flask_app"
+      },
+      {
+        "source": "/save-food",
+        "function": "flask_app"
+      },
+      {
+        "source": "/delete-food",
+        "function": "flask_app"
+      },
+      {
+        "source": "/add-food",
+        "function": "flask_app"
+      },
+      {
+        "source": "/clear-food-list",
+        "function": "flask_app"
+      },
+      {
+        "source": "/generate",
+        "function": "flask_app"
+      },
+      {
+        "source": "/generate-recipes",
+        "function": "flask_app"
+      },
+      {
+        "source": "/upload-haul",
+        "function": "flask_app"
+      },
+      {
+        "source": "/check-haul",
+        "function": "flask_app"
+      },
+      {
+        "source": "/get-recipe",
+        "function": "flask_app"
       }
     ]
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "hosting": {
+      "port": 5002
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "python312",
+    "entryPoint": "flask_app",
+    "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }
