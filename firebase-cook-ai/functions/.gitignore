@@ -1,2 +1,4 @@
 node_modules/
 *.local
+*.env
+cook-ai-4fc88-fd2283c2e331.json

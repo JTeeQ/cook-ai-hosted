@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_from_directory, jsonify
 from werkzeug.utils import secure_filename
 import json
 from openai import OpenAI
+#from dotenv import load_dotenv
 import os
 import base64
 import requests
@@ -10,9 +11,10 @@ from waitress import serve
 from flask_cors import CORS
 import io
 
+
 # Firebase Imports
 import firebase_admin
-from firebase_admin import auth, credentials, storage, firestore
+from firebase_admin import auth, credentials, storage, firestore, functions
 import functions_framework
 from firebase_functions import https_fn
 
@@ -32,6 +34,9 @@ cred = credentials.Certificate('cook-ai-4fc88-fd2283c2e331.json')
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'cook-ai-4fc88.appspot.com'
 })
+
+#load_dotenv()
+api_key = os.getenv('API_KEY')
 
 @app.route('/response/<filename>')
 def response(filename):
@@ -63,12 +68,13 @@ def generate():
         logger.error("No JSON data received")
         return jsonify({"error": "No JSON data received"}), 400
 
-    api_key = data.get('api_key')
+    #api_key = data.get('api_key')
     user_input = data.get('user_input')
+    #api_key = os.getenv('API_KEY')
 
-    if not api_key:
-        logger.error("API key is required")
-        return jsonify({"error": "API key is required"}), 400
+    #if not api_key:
+    #    logger.error("API key is required")
+    #    return jsonify({"error": "API key is required"}), 400
     if not user_input:
         logger.error("User input is required")
         return jsonify({"error": "User input is required"}), 400
@@ -115,6 +121,8 @@ def generate():
     attempt_counter = 0
     recipe_filepath = f"{root_filepath}/recipes.json"
 
+    api_key = os.getenv('API_KEY')
+
     while attempt_counter < max_attempts:
         attempt_counter += 1
         try:
@@ -124,7 +132,8 @@ def generate():
             # Generate a chat completion
             response = client.chat.completions.create(
                 messages=[{"role": "user", "content": final_prompt}],
-                model="gpt-3.5-turbo"
+                #model="gpt-3.5-turbo"
+                model="gpt-4o-mini"
             )
 
             # Extract the generated text
@@ -184,9 +193,15 @@ def upload_haul():
         return "No file part", 400
 
     # Decode the base64 string
-    file_bytes = base64.b64decode(file_data)
+    #file_bytes = base64.b64decode(file_data)
+    try:
+        file_bytes = base64.b64decode(file_data)
+        logger.info(f"Successfully decoded base64 data for {file_name}")
+    except Exception as e:
+        logger.error(f"Failed to decode base64 data: {e}")
+        return "Invalid base64 data", 400
 
-    api_key = data.get('api_key')
+    #api_key = data.get('api_key')
 
     if file_name == '':
         return "No selected file", 400
@@ -199,7 +214,7 @@ def upload_haul():
     bucket = storage.bucket()
     image_blob = bucket.blob(haul_image_filepath)
     
-    if file_bytes and api_key:
+    if file_bytes: #and api_key:
         # Convert the file bytes into BytesIO filelike object (to use with Firebase functions)
         file_stream = io.BytesIO(file_bytes)
 
@@ -212,6 +227,11 @@ def upload_haul():
         # Download the image from Firebase and convert to base64
         image_content = image_blob.download_as_bytes()
         base64_image = base64.b64encode(image_content).decode('utf-8')
+
+        api_key = os.getenv('API_KEY')
+        if not api_key:
+            logger.error("API Key not found in environment")
+            return "API key not configured", 500
 
         url = "https://api.openai.com/v1/chat/completions"
         headers = {
@@ -232,7 +252,7 @@ def upload_haul():
                 }
             ],
             "max_tokens": 300
-        }
+        } 
 
         response = requests.post(url, headers=headers, json=payload)
 
@@ -285,15 +305,17 @@ def upload_haul():
             return f"OpenAI API request failed: {response.text}", 500
 
     return "File upload failed", 500
-    
+
+
 @app.route('/generate-recipes', methods=['POST'])
 def generate_recipes():
     logger.info("Entering generate_recipes function.")
 
     try:
-        api_key = request.json.get('api_key_recipes')
+        #api_key = request.json.get('api_key_recipes')
+        api_key = os.getenv('API_KEY')
         if not api_key:
-            return jsonify(error="API key is required"), 400
+            return jsonify(error="API key is required"), 400 
 
         # Create a reference to the user's haul.json file
         data = request.json
@@ -326,6 +348,7 @@ def generate_recipes():
         ]
         final_prompt = " ".join(prompt_parts)
 
+        api_key = os.getenv('API_KEY')
         # Create an OpenAI client instance
         client = OpenAI(api_key=api_key)
 

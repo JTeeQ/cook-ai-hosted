@@ -2117,10 +2117,10 @@
 <p>Take a picture of your grocery haul to automatically 'bulk add' it to the list. Tip: Lay everything out first so all the labels are visible for best results.</p>
 <form id="upload-image-form" class="react-form-contents" enctype="multipart/form-data">
     <div class="field-list">
-        <div class="form-item field text required" id="text-api-key" data-dynamic-strings="">
+        <!-- <div class="form-item field text required" id="text-api-key" data-dynamic-strings="">
             <label for="api_key" class="title">API Key:</label>
             <input type="password" name="api_key" class="form-control" id="api_key" placeholder="Add your OpenAI API Key" required>
-        </div>
+        </div> -->
         <div class="form-item field file required" id="file-upload" enctype="multipart/form-data">
             <label for="file" class="title">Select image to upload:</label>
             <input type="file" name="file" class="form-control" id="file" accept="image/*" required>
@@ -2217,28 +2217,31 @@
 
             const formData = new FormData(this);
 
-            const apiKey = formData.get('api_key');
+            //const apiKey = formData.get('api_key');
 
             // Convert the file to base64 and send as JSON
             const file = formData.get('file');
             const reader = new FileReader();
 
             reader.onloadend = function () {
+                console.log("Base64 Image:", reader.result); //debugging line
                 // Get the base64 string
                 const base64File = reader.result.split(',')[1]; // Remove the 'data:image/jpeg;base64,' part
+                //const base64File = reader.result.replace(/^data:image\/[a-z]+;base64,/, '');
 
+                console.log('got pic file');
                 // Create the JSON data
                 let jsonData = {
                     rootPath: window.rootPath,
                     fileName: file.name,
                     fileType: file.type,
-                    fileData: base64File,
-                    api_key: apiKey
+                    fileData: base64File//,
+                    //api_key: apiKey
                 };
 
                 // Show the loading overlay
                 $('#loading-overlay').show();
-
+                console.log('before main.py call');
                 $.ajax({
                     url: '/upload-haul',
                     method: 'POST',
@@ -2256,7 +2259,7 @@
                         // Hide the loading overlay
                         $('#loading-overlay').hide();
                     }
-                });
+                }); console.log('after main.py call');
             };
 
             reader.onerror = function(error) {
@@ -2267,13 +2270,13 @@
             if (file) {
                 reader.readAsDataURL(file);
             }
-        });
+        }); 
 
         // Handle recipe generation
         $('#generate-recipes-form').submit(function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
 
-            const apiKey = $('#api_key_recipes').val();
+            //const apiKey = $('#api_key_recipes').val();
 
             // Show the loading overlay
             $('#loading-overlay').show();
@@ -2283,7 +2286,61 @@
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ 
-                  api_key_recipes: apiKey,
+                  //api_key_recipes: apiKey,
+                  rootPath: window.rootPath
+                }),
+                success: function(response) {
+                    console.log(response); // Debugging line to check the response structure
+                    let recipesHtml = '<h2>Generated Recipes:</h2>';
+                    response.recipes.forEach(recipe => {
+                        recipesHtml += `<div><strong>${recipe.meal}</strong> (Serving size: ${recipe.serving_size})</div>`;
+                        recipesHtml += `<ul>`;
+                        recipe.ingredients.forEach(ingredient => {
+                            recipesHtml += `<li>${ingredient}</li>`;
+                        });
+                        recipesHtml += `</ul>`;
+                        recipesHtml += `<div><strong>Instructions:</strong></div>`;
+                        recipesHtml += `<ol>`;
+                        recipe.instructions.forEach(instruction => {
+                            recipesHtml += `<li>${instruction}</li>`;
+                        });
+                        recipesHtml += `</ol>`;
+                        recipesHtml += `<hr>`;
+                    });
+                    $('#recipes-container').html(recipesHtml);
+                    showNotification('Recipes generated successfully!');
+                },
+                error: function(xhr) {
+                    let errorMessage = 'An error occurred while generating recipes';
+                    try {
+                        const responseJSON = JSON.parse(xhr.responseText);
+                        errorMessage = responseJSON.error;
+                    } catch (e) {
+                        errorMessage = 'An unexpected error occurred';
+                    }
+                    showNotification(`Failed to generate recipes: ${errorMessage}`, true);
+                },
+                complete: function() {
+                    // Hide the loading overlay
+                    $('#loading-overlay').hide();
+                }
+            });
+        });
+        // Handle recipe generation
+        $('#generate-recipes-form').submit(function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            //const apiKey = $('#api_key_recipes').val();
+
+            // Show the loading overlay
+            $('#loading-overlay').show();
+
+            $.ajax({
+                url: '/generate-recipes',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ 
+                  //api_key_recipes: apiKey,
                   rootPath: window.rootPath
                 }),
                 success: function(response) {
