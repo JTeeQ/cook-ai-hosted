@@ -1,5 +1,8 @@
-<!-- Import the authentication script -->
-<script type="module" src="../static/js/auth.js"></script>
+<script type="module">
+  window.rootPath = null
+  window.filePath = null
+
+</script>
 <!DOCTYPE html>
 <!-- saved from url=(0014)about:internet -->
 <html xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml" lang="en-US" class="yui3-js-enabled wf-adonisweb-n4-active wf-adonisweb-n7-active wf-adonisweb-i4-active wf-adonisweb-i7-active wf-adellesans-n4-active wf-active js flexbox canvas canvastext webgl no-touch hashchange history draganddrop rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms no-csstransforms3d csstransitions video audio svg inlinesvg svgclippaths" id="yui_3_17_2_1_1713238337998_76"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -707,10 +710,14 @@
       </a>
     </div>
   
-    <div id="user-info-container" class="header-nav-item header-nav-item--collection"></div>
-      
+  
+  
+
+
+
+                    </nav>
+                  </div>
                 </div>
-              </nav>
               
                 
                 <!-- Title -->
@@ -718,7 +725,7 @@
                   <div class="header-title preFade fadeIn" data-animation-role="header-element" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0116129s;">
                     
                       <div class="header-title-logo">
-                        <a href="" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0154839s;">
+                        <a href="/index.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0154839s;">
                         
 <img elementtiming="nbf-header-logo-desktop" src="../static/css/Fridge — CookAI_files/logo.png" alt="CookAI" style="display:block" fetchpriority="high" loading="eager" decoding="async" data-loader="raw">
 
@@ -1556,7 +1563,7 @@
           
 
           
-            <a class="sqs-block-image-link content-fit" href="https://cook-ai-4fc88.web.app/s/pyi0_l4r2_220304.jpg" target="_blank" id="yui_3_17_2_1_1713238337998_65">
+            <a class="sqs-block-image-link content-fit" target="_blank" id="yui_3_17_2_1_1713238337998_65">
               
             
             
@@ -2110,11 +2117,11 @@
 <p>Take a picture of your grocery haul to automatically 'bulk add' it to the list. Tip: Lay everything out first so all the labels are visible for best results.</p>
 <form id="upload-image-form" class="react-form-contents" enctype="multipart/form-data">
     <div class="field-list">
-        <div class="form-item field text required" id="text-api-key" data-dynamic-strings="">
+        <!-- <div class="form-item field text required" id="text-api-key" data-dynamic-strings="">
             <label for="api_key" class="title">API Key:</label>
             <input type="password" name="api_key" class="form-control" id="api_key" placeholder="Add your OpenAI API Key" required>
-        </div>
-        <div class="form-item field file required" id="file-upload">
+        </div> -->
+        <div class="form-item field file required" id="file-upload" enctype="multipart/form-data">
             <label for="file" class="title">Select image to upload:</label>
             <input type="file" name="file" class="form-control" id="file" accept="image/*" required>
         </div>
@@ -2152,7 +2159,11 @@
 <h3>Clear ALL Current Food List</h3>
 <button id="clear-all-food-btn">Clear ALL Foods</button>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+  import { getStorage, ref, getDownloadURL, uploadString } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
+
     $(document).ready(function() {
         // Function to show notification banner
         function showNotification(message, isError = false) {
@@ -2169,28 +2180,145 @@
             }, 2000);
         }
 
-        // Handle image upload
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1BRYzsdICZqEjCLei35VbGaJIs0Ns3x0",
+            authDomain: "cook-ai-4fc88.firebaseapp.com",
+            projectId: "cook-ai-4fc88",
+            storageBucket: "cook-ai-4fc88.appspot.com",
+            messagingSenderId: "21163147226",
+            appId: "1:21163147226:web:04ccf8a23cc82d78468ae3"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        async function checkAuth() {
+          return new Promise((resolve, reject) => {
+            onAuthStateChanged(auth, (user) => {
+              if (user) {
+                console.log("User is signed in:", user);
+                window.rootPath = `users/${user.uid}`;
+                window.filePath = `users/${user.uid}/haul.json`;
+                resolve(window.filePath); // Resolve the promise with the file path when user is signed in
+              } else {
+                console.log("No user is signed in. Redirecting to login.");
+                window.location.href = "/login.html"; // Redirect if not signed in
+                reject(new Error("No user is signed in")); // Reject the promise if no user is signed in
+              }
+            });
+          });
+        }
+        
         $('#upload-image-form').submit(function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
 
             const formData = new FormData(this);
 
+            //const apiKey = formData.get('api_key');
+
+            // Convert the file to base64 and send as JSON
+            const file = formData.get('file');
+            const reader = new FileReader();
+
+            reader.onloadend = function () {
+                console.log("Base64 Image:", reader.result); //debugging line
+                // Get the base64 string
+                const base64File = reader.result.split(',')[1]; // Remove the 'data:image/jpeg;base64,' part
+                //const base64File = reader.result.replace(/^data:image\/[a-z]+;base64,/, '');
+
+                console.log('got pic file');
+                // Create the JSON data
+                let jsonData = {
+                    rootPath: window.rootPath,
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileData: base64File//,
+                    //api_key: apiKey
+                };
+
+                // Show the loading overlay
+                $('#loading-overlay').show();
+                console.log('before main.py call');
+                $.ajax({
+                    url: '/upload-haul',
+                    method: 'POST',
+                    data: JSON.stringify(jsonData),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        $('#upload-response').html('<p>Upload complete</p>');
+                        showNotification('Upload complete');
+                        loadFoodList();
+                    },
+                    error: function(xhr) {
+                        showNotification(`Failed to upload image: ${xhr.responseText}`, true);
+                    },
+                    complete: function() {
+                        // Hide the loading overlay
+                        $('#loading-overlay').hide();
+                    }
+                }); console.log('after main.py call');
+            };
+
+            reader.onerror = function(error) {
+                console.error("Error reading file:", error);
+            };
+
+            // Read the file as base64
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }); 
+
+        // Handle recipe generation
+        $('#generate-recipes-form').submit(function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            //const apiKey = $('#api_key_recipes').val();
+
             // Show the loading overlay
             $('#loading-overlay').show();
 
             $.ajax({
-                url: '/upload-haul',
+                url: '/generate-recipes',
                 method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
+                contentType: 'application/json',
+                data: JSON.stringify({ 
+                  //api_key_recipes: apiKey,
+                  rootPath: window.rootPath
+                }),
                 success: function(response) {
-                    $('#upload-response').html('<p>Upload complete</p>');
-                    showNotification('Upload complete');
-                    loadFoodList();
+                    console.log(response); // Debugging line to check the response structure
+                    let recipesHtml = '<h2>Generated Recipes:</h2>';
+                    response.recipes.forEach(recipe => {
+                        recipesHtml += `<div><strong>${recipe.meal}</strong> (Serving size: ${recipe.serving_size})</div>`;
+                        recipesHtml += `<ul>`;
+                        recipe.ingredients.forEach(ingredient => {
+                            recipesHtml += `<li>${ingredient}</li>`;
+                        });
+                        recipesHtml += `</ul>`;
+                        recipesHtml += `<div><strong>Instructions:</strong></div>`;
+                        recipesHtml += `<ol>`;
+                        recipe.instructions.forEach(instruction => {
+                            recipesHtml += `<li>${instruction}</li>`;
+                        });
+                        recipesHtml += `</ol>`;
+                        recipesHtml += `<hr>`;
+                    });
+                    $('#recipes-container').html(recipesHtml);
+                    showNotification('Recipes generated successfully!');
                 },
                 error: function(xhr) {
-                    showNotification(`Failed to upload image: ${xhr.responseText}`, true);
+                    let errorMessage = 'An error occurred while generating recipes';
+                    try {
+                        const responseJSON = JSON.parse(xhr.responseText);
+                        errorMessage = responseJSON.error;
+                    } catch (e) {
+                        errorMessage = 'An unexpected error occurred';
+                    }
+                    showNotification(`Failed to generate recipes: ${errorMessage}`, true);
                 },
                 complete: function() {
                     // Hide the loading overlay
@@ -2198,21 +2326,23 @@
                 }
             });
         });
-
         // Handle recipe generation
         $('#generate-recipes-form').submit(function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
 
-            const apiKey = $('#api_key_recipes').val();
+            //const apiKey = $('#api_key_recipes').val();
 
             // Show the loading overlay
             $('#loading-overlay').show();
 
             $.ajax({
-                url: '/generate.html-recipes',
+                url: '/generate-recipes',
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ api_key_recipes: apiKey }),
+                data: JSON.stringify({ 
+                  //api_key_recipes: apiKey,
+                  rootPath: window.rootPath
+                }),
                 success: function(response) {
                     console.log(response); // Debugging line to check the response structure
                     let recipesHtml = '<h2>Generated Recipes:</h2>';
@@ -2252,161 +2382,143 @@
         });
 
         // Load the current food list from the server
-        function loadFoodList() {
-            $.getJSON('/get-food-list', function(data) {
+        async function loadFoodList() {
+          // Set up the file path for the user's haul.json file
+          await checkAuth();
+          console.log("File path: ", window.filePath)
+
+          $.ajax({
+              url: '/get-food-list',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                filePath: window.filePath
+              }),
+              success: function(data) {
                 const foodListBody = $('#food-list-body');
                 foodListBody.empty(); // Clear the table body
 
+                // data = JSON.parse(data);
+
+                console.log("Data received:", data);  // Log the full response
+                console.log("Ingredients:", data.ingredients);  // Log the ingredients array
+
                 data.ingredients.forEach((food, index) => {
-                    const row = $('<tr>');
-                    row.append(`<td class="food-name-column food-name">${food}</td>`);
-                    row.append(`
-                        <td class="edit-food-column edit-food-container">
-                            <input type="text" id="edit-food-${index}" value="${food}">
-                            <button onclick="saveFood(${index})">Save</button>
-                        </td>
-                    `);
-                    row.append(`<td class="delete-food-column"><button onclick="deleteFood(${index})">Delete</button></td>`);
-                    foodListBody.append(row);
+                  const row = $('<tr>');
+                  row.append(`<td class="food-name-column food-name" style="color:white;">${food}</td>`);
+                  row.append(`
+                      <td class="edit-food-column edit-food-container">
+                          <input type="text" id="edit-food-${index}" value="${food}">
+                          <button onclick="saveFood(${index})">Save</button>
+                      </td>
+                  `);
+                  row.append(`<td class="delete-food-column"><button onclick="deleteFood(${index})">Delete</button></td>`);
+                  foodListBody.append(row);
                 });
-            });
-        }
+              },
+              error: function(xhr) {
+                showNotification(`Failed to load food list: ${xhr.responseText}`, true);
+              }
+          });
+          console.log("File path at end of loadFoodList: ", window.filePath)
+        };
 
         // Initial load of food list
         loadFoodList();
 
         // Save edited food
         window.saveFood = function(index) {
-            const newName = $(`#edit-food-${index}`).val();
-            $.ajax({
-                url: '/save-food',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ index, new_name: newName }),
-                success: function(response) {
-                    showNotification('Food name updated successfully!');
-                    loadFoodList();
-                },
-                error: function(xhr) {
-                    showNotification(`Failed to save food: ${xhr.responseText}`, true);
-                }
-            });
+          const newName = $(`#edit-food-${index}`).val();
+
+          $.ajax({
+              url: '/save-food',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                filePath: window.filePath,
+                index: index,
+                new_name: newName
+              }),
+              success: function(response) {
+                showNotification('Food name updated successfully!');
+                loadFoodList();
+              },
+              error: function(xhr) {
+                showNotification(`Failed to save food: ${xhr.responseText}`, true);
+              }
+          });
         };
 
         // Delete food
         window.deleteFood = function(index) {
-            $.ajax({
-                url: '/delete-food',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ index }),
-                success: function(response) {
-                    showNotification('Food deleted successfully!');
-                    loadFoodList();
-                },
-                error: function(xhr) {
-                    showNotification(`Failed to delete food: ${xhr.responseText}`, true);
-                }
-            });
+          $.ajax({
+              url: '/delete-food',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                filePath: window.filePath,
+                index: index
+              }),
+              success: function(response) {
+                showNotification('Food deleted successfully!');
+                loadFoodList();
+              },
+              error: function(xhr) {
+                showNotification(`Failed to delete food: ${xhr.responseText}`, true);
+              }
+          });
         };
 
         // Add new food
         $('#add-new-food-btn').click(function() {
             const newFood = $('#new-food-input').val();
-            if (newFood) {
-                $.ajax({
-                    url: '/add-food',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ newFood }),
-                    success: function(response) {
-                        showNotification(response.message);
-                        $('#new-food-input').val('');
-                        loadFoodList();
-                    },
-                    error: function(xhr) {
-                        showNotification(`Failed to add food: ${xhr.responseText}`, true);
-                    }
-                });
+
+            if(newFood){
+              $.ajax({
+                url: '/add-food',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                  filePath: window.filePath, 
+                  newFood: newFood 
+                }),
+                success: function(response) {
+                  showNotification(response.message);
+                  $('#new-food-input').val('');
+                  loadFoodList();
+                },
+                error: function(xhr) {
+                  showNotification(`Failed to add food: ${xhr.responseText}`, true);
+                }
+              });
             } else {
-                showNotification('Please enter a food name.', true);
+              showNotification('Please enter a food name.', true);
             }
         });
 
         // Clear all foods
         $('#clear-all-food-btn').click(function() {
-            $.ajax({
-                url: '/clear-food-list',
-                method: 'POST',
-                success: function(response) {
-                    showNotification('All food items cleared successfully!');
-                    loadFoodList();
-                },
-                error: function(xhr) {
-                    showNotification(`Failed to clear food list: ${xhr.responseText}`, true);
-                }
-            });
+          $.ajax({
+              url: '/clear-food-list',
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({ 
+                filePath: window.filePath
+              }),
+              success: function(response) {
+                showNotification('All food items cleared successfully!');
+                loadFoodList();
+              },
+              error: function(xhr) {
+                showNotification(`Failed to clear food list: ${xhr.responseText}`, true);
+              }
+          });
         });
     });
 </script>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
 </div></div></div><div class="fe-block fe-block-31b34f1633d90058c67a" id="yui_3_17_2_1_1713238337998_88"><div class="sqs-block image-block sqs-block-image sqs-stretched sqs-text-ready" data-aspect-ratio="100" data-block-type="5" id="block-31b34f1633d90058c67a"><div class="sqs-block-content" id="yui_3_17_2_1_1713238337998_87" style="height: 100%; width: 100%;">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   <svg data-image-mask-id="31b34f1633d90058c67a" width="0" height="0" style="position: absolute;">
@@ -2420,70 +2532,7 @@
 
         
           <path d="M0,0.5 A0.5 0.5, 0 0 1, 1 0.5 M1,0.5 A0.5 0.5, 0 0 1, 0 0.5 Z">
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
-        
-
+      
         
       </path></clippath>
     </defs>
@@ -2633,7 +2682,7 @@
   
 
 
-<section data-test="page-section" data-section-theme="bright" class="page-section 
+<!-- <section data-test="page-section" data-section-theme="bright" class="page-section 
     
       full-bleed-section
       layout-engine-section
@@ -2814,13 +2863,14 @@
     .fe-block-yui_3_17_2_1_1712187667812_17423 .sqs-block-alignment-wrapper {
       align-items: flex-start;
     }
-  }
+  } -->
 
+<!--
 </style><div class="fluid-engine fe-660deee495df53341bd7605f"><div class="fe-block fe-block-yui_3_17_2_1_1712187667812_10468"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1712187667812_10468"><div class="sqs-block-content"><p class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.545806s;">Input the code for the ingredients checkbox list here</p></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1712187667812_17423" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-yui_3_17_2_1_1712187667812_17423"><div class="sqs-block-content">
 
 <div class="sqs-html-content">
   <p class="preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.549677s;">Note: We are sorry but at the current version of Cook AI you are not able to edit the item list. This feature will be implemented with the official release of the Cook AI in December 2024!<br>For now, Cook AI will use a pre-coded list of ingredients that are indicated by a checkmark. </p>
-</div>
+</div> -->
 
 
 
