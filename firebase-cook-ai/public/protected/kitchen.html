@@ -1568,7 +1568,7 @@
                 event.preventDefault(); // Prevent the form from submitting the traditional way
 
                 const user_input = document.querySelector("input[name='user_input']").value;
-                const api_key = document.querySelector("input[name='api_key']").value;
+                //const api_key = document.querySelector("input[name='api_key']").value;
 
                 // Show the loading overlay
                 document.getElementById("loading-overlay").style.display = "flex";
@@ -1580,7 +1580,7 @@
                         if (data.exists) {
                             let jsonData = {
                                 rootPath: window.rootPath,
-                                api_key: api_key,
+                                //api_key: api_key,
                                 user_input: user_input
                             };
                             // If the file exists, submit the form data to the generate endpoint
@@ -1643,7 +1643,7 @@
             $('#generate-recipes-form').submit(function(event) {
                 event.preventDefault(); // Prevent the form from submitting the traditional way
 
-                const apiKey = $('#api_key_recipes').val();
+                //const apiKey = $('#api_key_recipes').val();
 
                 // Show the loading overlay
                 $('#loading-overlay').show();
@@ -1652,7 +1652,7 @@
                     url: '/generate-recipes',
                     method: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ api_key_recipes: apiKey, rootPath: window.rootPath }),
+                    data: JSON.stringify({ /*api_key_recipes: apiKey,*/ rootPath: window.rootPath }),
                     dataType: 'json',
                     success: function(response) {
                         console.log(response); // Debugging line to check the response structure
