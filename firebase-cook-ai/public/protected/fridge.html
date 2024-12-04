@@ -47,6 +47,31 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
+<!--
+This part fixes the fridge page's formatting. PLEASE PLEASE do not edit. PLEASE PLEASE :) BEGIN:
+-->
+
+	.full-bleed-section {
+		width: 100vw;
+		margin: 0;
+		padding: 0;
+	}
+
+	.background-width--full-bleed {
+		width: 100vw !important;
+	}
+
+	#middle-section {
+		width: 100vw;
+		background-color: #3F5A36;
+		padding: 40px 0;
+		position: relative;
+		z-index: 1;
+	}
+	
+<!--
+This part fixes the fridge page's formatting. PLEASE PLEASE do not edit. PLEASE PLEASE :) END.
+-->
     #notification-banner {
         position: fixed;
         top: 0;
@@ -714,6 +739,17 @@
   
 
 
+  
+    <div class="header-nav-item header-nav-item--collection">
+      <a href="profile.html" data-animation-role="header-element" class="preFade fadeIn" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.00387097s;">
+        Profile
+      </a>
+    </div>
+  
+  
+  
+
+
 
                     </nav>
                   </div>
@@ -845,6 +881,17 @@
     <div class="header-nav-item header-nav-item--collection header-nav-item--active">
       <a href="fridge.html" data-animation-role="header-element" aria-current="page" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0309677s;">
         Fridge
+      </a>
+    </div>
+  
+  
+  
+
+
+  
+    <div class="header-nav-item header-nav-item--collection">
+      <a href="profile.html" data-animation-role="header-element" class="preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0270968s;">
+        Profile
       </a>
     </div>
   
@@ -1230,6 +1277,20 @@
               <a href="fridge.html" aria-current="page">
                 <div class="header-menu-nav-item-content">
                   Fridge
+                </div>
+              </a>
+            </div>
+          
+        
+      
+    
+      
+        
+          
+            <div class="container header-menu-nav-item header-menu-nav-item--collection">
+              <a href="profile.html">
+                <div class="header-menu-nav-item-content">
+                  Profile
                 </div>
               </a>
             </div>
@@ -2101,11 +2162,11 @@
 </style><div class="fluid-engine fe-661def5199c39718a0f1d245" id="yui_3_17_2_1_1713238337998_89"><div class="fe-block fe-block-0791ab0b1718dbd8d31f" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-0791ab0b1718dbd8d31f"><div class="sqs-block-content">
 
 <div class="sqs-html-content">
-  <h2 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0580645s;" class="preFade fadeIn">Ingredients List</h2><p class="preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0619355s;">Here is the place to upload your grocery haul picture, and view and edit your fridge</p>
+  <h2 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0580645s;" class="preFade fadeIn">Ingredients List</h2> <h4 class="preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.0619355s;">Here is the place to upload your grocery haul picture, and view and edit your fridge</h4>
 </div>
 
 <!-- Notification Banner -->
-<div id="notification-banner">This is a notification</div>
+<div id="notification-banner" style="display:none; ">This is a notification</div>
 
 <!-- Loading Overlay -->
 <div id="loading-overlay" style="display:none;">
@@ -2113,8 +2174,9 @@
 </div>
 
 <!-- Form for uploading grocery haul -->
-<h2>Upload Grocery Haul</h2>
-<p>Take a picture of your grocery haul to automatically 'bulk add' it to the list. Tip: Lay everything out first so all the labels are visible for best results.</p>
+<h3>Upload Grocery Haul</h3>
+<h4>Take a picture of your grocery haul to automatically 'bulk add' it to the list.</h4> 
+<h4>Tip: Lay everything out first so all the labels are visible for best results.</h4>
 <form id="upload-image-form" class="react-form-contents" enctype="multipart/form-data">
     <div class="field-list">
         <!-- <div class="form-item field text required" id="text-api-key" data-dynamic-strings="">
@@ -2135,14 +2197,14 @@
 
 <div id="recipes-container"></div>
 
-<h2>Current Food List</h2>
-<p>Add, edit, and Remove from your Fridge.</p>
+<h3>Current Food List</h3>
+<h4>Add, edit, and Remove from your Fridge.</h4>
 <table id="food-list-table">
     <thead>
         <tr>
-            <th>Name of Food</th>
-            <th>Edit Food</th>
-            <th>Delete Food</th>
+            <th style="color:white;"> Name of Food</th>
+            <th style="color:white;"> Edit Food</th>
+            <th style="color:white;"> Delete Food</th>
         </tr>
     </thead>
     <tbody id="food-list-body">
@@ -2158,6 +2220,15 @@
 <!-- Clear all food section -->
 <h3>Clear ALL Current Food List</h3>
 <button id="clear-all-food-btn">Clear ALL Foods</button>
+
+<!-- Add spacing -->
+<div style="margin-top: 150px;"></div>
+
+<h2>Modify Ingredient List</h2>
+<h4>Click the button below to request Cook AI to update your ingredient list based on the diet, allergy preferences, and spice tolerance saved in your profile.</h4>
+<button id="modify-ingredients-btn">Modify Ingredient List</button>
+<div id="modify-ingredients-response"></div>
+<h4>Tip: If you don’t click the button, the generated recipes might not fully align with your saved preferences. Be sure to modify your list whenever new ingredients are added to the fridge for the best Cook AI experience!</h4>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
@@ -2272,60 +2343,6 @@
             }
         }); 
 
-        // Handle recipe generation
-        $('#generate-recipes-form').submit(function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
-
-            //const apiKey = $('#api_key_recipes').val();
-
-            // Show the loading overlay
-            $('#loading-overlay').show();
-
-            $.ajax({
-                url: '/generate-recipes',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ 
-                  //api_key_recipes: apiKey,
-                  rootPath: window.rootPath
-                }),
-                success: function(response) {
-                    console.log(response); // Debugging line to check the response structure
-                    let recipesHtml = '<h2>Generated Recipes:</h2>';
-                    response.recipes.forEach(recipe => {
-                        recipesHtml += `<div><strong>${recipe.meal}</strong> (Serving size: ${recipe.serving_size})</div>`;
-                        recipesHtml += `<ul>`;
-                        recipe.ingredients.forEach(ingredient => {
-                            recipesHtml += `<li>${ingredient}</li>`;
-                        });
-                        recipesHtml += `</ul>`;
-                        recipesHtml += `<div><strong>Instructions:</strong></div>`;
-                        recipesHtml += `<ol>`;
-                        recipe.instructions.forEach(instruction => {
-                            recipesHtml += `<li>${instruction}</li>`;
-                        });
-                        recipesHtml += `</ol>`;
-                        recipesHtml += `<hr>`;
-                    });
-                    $('#recipes-container').html(recipesHtml);
-                    showNotification('Recipes generated successfully!');
-                },
-                error: function(xhr) {
-                    let errorMessage = 'An error occurred while generating recipes';
-                    try {
-                        const responseJSON = JSON.parse(xhr.responseText);
-                        errorMessage = responseJSON.error;
-                    } catch (e) {
-                        errorMessage = 'An unexpected error occurred';
-                    }
-                    showNotification(`Failed to generate recipes: ${errorMessage}`, true);
-                },
-                complete: function() {
-                    // Hide the loading overlay
-                    $('#loading-overlay').hide();
-                }
-            });
-        });
         // Handle recipe generation
         $('#generate-recipes-form').submit(function(event) {
             event.preventDefault(); // Prevent the form from submitting the traditional way
@@ -2513,6 +2530,38 @@
                 showNotification(`Failed to clear food list: ${xhr.responseText}`, true);
               }
           });
+        });
+        
+        // Modify ingredient list based on user profile
+        $('#modify-ingredients-btn').click(function() {
+
+            // Show the loading overlay
+            $('#loading-overlay').show();
+
+            $.ajax({
+                url: '/modify-ingredients',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ rootPath: window.rootPath }),
+                success: function(response) {
+                    showNotification('Ingredient list modified successfully!');
+                    loadFoodList();  // Reload the food list to reflect the changes
+                },
+                error: function(xhr) {
+                    let errorMessage = 'An error occurred while modifying ingredients';
+                    try {
+                        const responseJSON = JSON.parse(xhr.responseText);
+                        errorMessage = responseJSON.error;
+                    } catch (e) {
+                        errorMessage = 'An unexpected error occurred';
+                    }
+                    showNotification(`Failed to modify ingredients: ${errorMessage}`, true);
+                },
+                complete: function() {
+                    // Hide the loading overlay
+                    $('#loading-overlay').hide();
+                }
+            });
         });
     });
 </script>
@@ -3200,7 +3249,7 @@
 </style><div class="fluid-engine fe-660c2e4f2613da75f8fc72c0" id="yui_3_17_2_1_1713238337998_103"><div class="fe-block fe-block-302b5b055caddf571194" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-302b5b055caddf571194"><div class="sqs-block-content preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.553548s;">
 
 <div class="sqs-html-content">
-  <p class="sqsrte-large preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.557419s;">CookAI 2024 - CSC 354 Prototype</p><p class="sqsrte-large preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.56129s;"><a href="https://github.com/acageduser/cook-ai" target="_blank">GitHub</a> Documentation</p>
+  <p class="sqsrte-large preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.557419s;">CookAI 2024</p><p class="sqsrte-large preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.56129s;"><a href="https://github.com/acageduser/cook-ai" target="_blank">GitHub</a> Documentation</p>
 </div>
 
 
@@ -3339,8 +3388,13 @@
 </div></div></div><div class="fe-block fe-block-3387748b39c2822d81bd" style="mix-blend-mode: normal;"><div class="sqs-block html-block sqs-block-html" data-blend-mode="NORMAL" data-block-type="2" data-border-radii="{&quot;topLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;topRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomLeft&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0},&quot;bottomRight&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;value&quot;:0.0}}" id="block-3387748b39c2822d81bd"><div class="sqs-block-content preFade" style="transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.572903s;">
 
 <div class="sqs-html-content">
-  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.576774s;" class="preFade"><strong>Navigation</strong></h4><p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.580645s;"><a href="../index.html">Home</a></p><p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.584516s;"><a href="kitchen.html" target="">Kitchen</a></p><p class="sqsrte-small preFade fadeIn" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.588387s;"><a href="fridge.html">Fridge</a></p><p class="sqsrte-small preFade" data-rte-preserve-empty="true" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.592258s;"></p>
+  <h4 style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.576774s;" class="preFade"><strong>Navigation</strong></h4>
+  <p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.580645s;"><a href="../index.html">Home</a></p>
+  <p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.584516s;"><a href="kitchen.html" target="">Kitchen</a></p>
+  <p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.588387s;"><a href="fridge.html">Fridge</a></p>
+  <p class="sqsrte-small preFade" style="white-space: pre-wrap; transition-timing-function: ease; transition-duration: 0.9s; transition-delay: 0.592258s;"><a href="profile.html" target="">Profile</a></p>
 </div>
+
 
 
 
