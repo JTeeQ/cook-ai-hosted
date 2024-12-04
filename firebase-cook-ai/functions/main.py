@@ -8,6 +8,7 @@ import base64
 import requests
 import logging
 from waitress import serve
+from firebase_functions import https_fn
 from flask_cors import CORS
 import io
 
@@ -312,83 +313,111 @@ def generate_recipes():
     logger.info("Entering generate_recipes function.")
 
     try:
-        #api_key = request.json.get('api_key_recipes')
+        # Retrieve API key
         api_key = os.getenv('API_KEY')
         if not api_key:
-            return jsonify(error="API key is required"), 400 
+            logger.error("API key is missing.")
+            return jsonify({"error": "API key is required"}), 400
 
-        # Create a reference to the user's haul.json file
+        # Retrieve root filepath from request data
         data = request.json
         root_filepath = data.get('rootPath')
-        haul_filepath = root_filepath + '/haul.json'
+        if not root_filepath:
+            logger.error("Root filepath is missing from request data.")
+            return jsonify({"error": "Root filepath is required"}), 400
 
+        # Define paths
+        haul_filepath = f"{root_filepath}/haul.json"
+        haul_conditions_path = f"{root_filepath}/haulConditions.json"
+
+        # Ensure haul.json exists
         bucket = storage.bucket()
-        blob = bucket.blob(haul_filepath)
+        haul_blob = ensure_file_exists(bucket, haul_filepath, default_content={"ingredients": []})
 
-        if not blob.exists():
-            return jsonify(error="No ingredients found. Please add items to your fridge first."), 400
-
+        # Load ingredients from haul.json
         try:
-            # Download the JSON data from the blob
-            ingredients_data = json.loads(blob.download_as_text())
+            ingredients_data = json.loads(haul_blob.download_as_text())
             ingredients_list = ingredients_data.get('ingredients', [])
-            if not ingredients_list:
-                return jsonify(error="No ingredients found in haul.json"), 400
         except Exception as e:
-            return jsonify(error=f"Error reading haul.json: {str(e)}"), 500
+            logger.error(f"Error reading haul.json: {e}")
+            return jsonify({"error": f"Error reading haul.json: {e}"}), 500
 
-        # Ensure ingredients_list is a list of strings
-        if isinstance(ingredients_list, list):
-            ingredients_list = [ingredient if isinstance(ingredient, str) else str(ingredient) for ingredient in ingredients_list]
+        if not ingredients_list:
+            logger.error("No ingredients found in haul.json.")
+            return jsonify({"error": "No ingredients found in haul.json."}), 400
 
-        # Construct the prompt for the OpenAI API
+        # Ensure haulConditions.json exists
+        haul_conditions_blob = ensure_file_exists(
+            bucket,
+            haul_conditions_path,
+            default_content={"diets": [], "allergies": [], "spice_tolerance": None, "serving_size": 4, "prep_time": 20}
+        )
+
+        # Load conditions from haulConditions.json
+        try:
+            haul_conditions = json.loads(haul_conditions_blob.download_as_text())
+            recipe_type = haul_conditions.get('diets')
+            allergies = haul_conditions.get('allergies')
+            serving_size = haul_conditions.get('serving_size')
+            prep_time = haul_conditions.get('prep_time')
+            spiciest_food = haul_conditions.get('spice_tolerance')
+        except Exception as e:
+            logger.error(f"Error reading haulConditions.json: {e}")
+            return jsonify({"error": f"Error reading haulConditions.json: {e}"}), 500
+
+
+        # Construct OpenAI prompt
         prompt_parts = [
-            f"Generate 5 different meals I can make with this set of food: {', '.join(ingredients_list)}.",
-            "Please format the recipes as a JSON array with each recipe containing 'meal', 'serving_size', 'ingredients', and 'instructions'."
+            f"Generate 5 different meals I can make with this set of food: {', '.join(ingredients_list)}."
         ]
+        if serving_size:
+            prompt_parts.append(f"Each recipe should serve {serving_size} people.")
+        if prep_time:
+            prompt_parts.append(f"Each recipe should take no longer than {prep_time} minutes to prepare.")
+        if recipe_type:
+            prompt_parts.append(f"Each recipe should be suitable for a {', '.join(recipe_type)} diet.")
+        if allergies:
+            prompt_parts.append(f"Exclude any ingredients that may trigger these allergies: {', '.join(allergies)}.")
+        if spiciest_food:
+            prompt_parts.append(f"Each recipe should have a determined spice level (like mild, medium, or hot) based on the user's tolerance, which is set to: {spiciest_food}.")
+        prompt_parts.append(f"Please format the recipes as a JSON array with each recipe containing 'meal', 'serving_size', 'type (diet)', 'allergies', 'prep_time', 'ingredients' with quantities, 'instructions' as an array, 'spice_level', and 'based_on'. The 'based_on' field should reflect the spiciest ingredient, which is: {spiciest_food}.")
         final_prompt = " ".join(prompt_parts)
 
-        api_key = os.getenv('API_KEY')
-        # Create an OpenAI client instance
+        # OpenAI API call
         client = OpenAI(api_key=api_key)
-
-        # Generate a chat completion
         response = client.chat.completions.create(
             messages=[{"role": "user", "content": final_prompt}],
             model="gpt-4o-mini"
         )
 
-        # Extract the generated text
+        # Parse OpenAI response
         generated_text = response.choices[0].message.content
-
-        # Debug print to check the raw API response
-        print(f"Raw API response: {generated_text}")
-
-        # Find the JSON object within the text
         start_index = generated_text.find('[')
         end_index = generated_text.rfind(']')
         if start_index == -1 or end_index == -1:
-            return jsonify(error="Failed to find JSON in response"), 500
+            logger.error("Failed to find JSON in response.")
+            return jsonify({"error": "Invalid response format from OpenAI."}), 500
 
         json_text = generated_text[start_index:end_index + 1]
+        try:
+            recipes = json.loads(json_text)
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse JSON: {e}")
+            return jsonify({"error": f"Invalid JSON format in OpenAI response: {e}"}), 500
 
-        # Convert the extracted JSON text to a Python object
-        recipes = json.loads(json_text)
+        # Save recipes to recipes.json
+        recipes_filepath = f"{root_filepath}/recipes.json"
+        recipes_blob = bucket.blob(recipes_filepath)
+        recipes_blob.upload_from_string(json.dumps(recipes, indent=2), content_type='application/json')
 
-        # Save the extracted JSON to recipes.json
-
-        # json_filepath = os.path.join(app.root_path, 'haul', 'recipes.json')
-        # with open(json_filepath, 'w') as json_file:
-        #     json.dump(recipes, json_file, indent=2)
-
-        recipe_filepath = root_filepath + '/recipes.json'
-        recipe_blob = bucket.blob(recipe_filepath)
-        recipe_blob.upload_from_string(json.dumps(recipes, indent=2), content_type='application/json')
-
-        return jsonify(recipes=recipes)
+        logger.info("Recipes generated and saved successfully.")
+        return jsonify({"recipes": recipes}), 200
 
     except Exception as e:
-        return jsonify(error=f"Failed to generate recipes: {str(e)}"), 500
+        logger.error(f"Failed to generate recipes: {e}")
+        return jsonify({"error": f"Failed to generate recipes: {e}"}), 500
+
+
 
 # Route to get the current food list
 @app.route('/get-food-list', methods=['POST'])
@@ -600,6 +629,508 @@ def get_recipe():
         logger.error("An error occurred: %s", e)
         return jsonify({"error": str(e)}), 500
 
+def ensure_file_exists(bucket, filepath, default_content=None):
+    """
+    Ensures that a file exists in Firebase Storage. If it doesn't exist, creates it with the specified default content.
+    """
+    blob = bucket.blob(filepath)
+    if not blob.exists():
+        logger.info(f"{filepath} does not exist. Creating a new one.")
+        # Create a default content if provided, else an empty object
+        default_content = default_content or {}
+        blob.upload_from_string(json.dumps(default_content, indent=2), content_type="application/json")
+        logger.info(f"Created new file at {filepath} with default content.")
+    else:
+        logger.info(f"{filepath} already exists.")
+    return blob
+
+@app.route('/get-allergy-list', methods=['POST'])
+def get_allergy_list():
+    logger.info("Entering get_allergy_list function.")
+    try:
+        data = request.json
+        haul_conditions_filepath = data.get('filePath')
+        logger.info("File Path: %s", haul_conditions_filepath)
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_data = json.loads(blob.download_as_text())
+        logger.info(f"Retrieved data: {json_data}")
+
+        allergies = json_data.get('allergies', [])
+        return jsonify({"allergies": allergies}), 200
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/save-allergy', methods=['POST'])
+def save_allergy():
+    logger.info("Entering save_allergy function.")
+    try:
+        data = request.json
+        index = data['index']
+        new_allergy = data['newAllergy']
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before update: {json_content}")
+        allergy_data = json.loads(json_content)
+
+        # Edit the allergy at the specified index
+        if 0 <= index < len(allergy_data['allergies']):
+            allergy_data['allergies'][index] = new_allergy
+        else:
+            return jsonify({"error": "Index out of range"}), 400
+
+        updated_json = json.dumps(allergy_data, indent=2)
+
+        blob.upload_from_string(updated_json, content_type='application/json')
+        logger.info("Allergy updated successfully.")
+        return jsonify({"message": "Allergy updated successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/delete-allergy', methods=['POST'])
+def delete_allergy():
+    logger.info("Entering delete_allergy function.")
+    try:
+        data = request.json
+        index = data['index']
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before deletion: {json_content}")
+        allergy_data = json.loads(json_content)
+
+        # Delete the allergy
+        if 0 <= index < len(allergy_data['allergies']):
+            allergy_data['allergies'].pop(index)
+        else:
+            return jsonify({"error": "Index out of range"}), 400
+
+        updated_json = json.dumps(allergy_data, indent=2)
+        blob.upload_from_string(updated_json, content_type='application/json')
+        logger.info("Allergy deleted successfully.")
+        return jsonify({"message": "Allergy deleted successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/add-allergy', methods=['POST'])
+def add_allergy():
+    logger.info("Entering add_allergy function.")
+    try:
+        data = request.json
+        new_allergy = data.get('new_allergy')
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before addition: {json_content}")
+        allergy_data = json.loads(json_content)
+
+        # Check for duplicates
+        if new_allergy in allergy_data['allergies']:
+            return jsonify({"error": "Allergy already exists"}), 400
+
+        # Add the new allergy
+        allergy_data['allergies'].append(new_allergy)
+        updated_json = json.dumps(allergy_data, indent=2)
+        logger.debug(f"Blob content after update: {updated_json}")
+        blob.upload_from_string(updated_json, content_type='application/json')
+        logger.info("Allergy added successfully.")
+        return jsonify({"message": "Allergy added successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/clear-allergy-list', methods=['POST'])
+def clear_allergy_list():
+    logger.info("Entering clear_allergy_list function.")
+    try:
+        data = request.json
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        conditions_data = json.loads(json_content)
+        logger.debug(f"Blob content before clearing allergies: {json_content}")
+
+        # Clear only the allergies field while keeping the other fields unchanged
+        conditions_data["allergies"] = []
+
+        # Upload the updated data back to Storage
+        updated_json = json.dumps(conditions_data, indent=2)
+        blob.upload_from_string(updated_json, content_type="application/json")
+        logger.info("All allergies cleared successfully.")
+        return jsonify({"message": "All allergies cleared successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/get-diet-list', methods=['POST'])
+def get_diet_list():
+    logger.info("Entering get_diet_list function.")
+    try:
+        data = request.json
+        haul_conditions_filepath = data.get('filePath')
+        logger.info("File Path: %s", haul_conditions_filepath)
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_data = json.loads(blob.download_as_text())
+        logger.info(f"Retrieved data: {json_data}")
+
+        diets = json_data.get('diets', [])
+        return jsonify({"diets": diets}), 200
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/save-diet', methods=['POST'])
+def save_diet():
+    logger.info("Entering save_diet function.")
+    try:
+        data = request.json
+        index = data['index']
+        new_diet = data['newDiet']
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before update: {json_content}")
+        diet_data = json.loads(json_content)
+
+        # Edit the diet at the specified index
+        if 0 <= index < len(diet_data['diets']):
+            diet_data['diets'][index] = new_diet
+        else:
+            return jsonify({"error": "Index out of range"}), 400
+
+        updated_json = json.dumps(diet_data, indent=2)
+
+        blob.upload_from_string(updated_json, content_type='application/json')
+        logger.info("Diet updated successfully.")
+
+        return jsonify({"message": "Diet updated successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/delete-diet', methods=['POST'])
+def delete_diet():
+    logger.info("Entering delete_diet function.")
+    try:
+        data = request.json
+        index = data['index']
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before deletion: {json_content}")
+        diet_data = json.loads(json_content)
+
+        # Delete the diet
+        if 0 <= index < len(diet_data['allergies']):
+            diet_data['diets'].pop(index)
+        else:
+            return jsonify({"error": "Index out of range"}), 400
+
+        updated_json = json.dumps(diet_data, indent=2)
+        blob.upload_from_string(updated_json, content_type='application/json')
+        logger.info("Diet deleted successfully.")
+
+        return jsonify({"message": "Diet deleted successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/add-diet', methods=['POST'])
+def add_diet():
+    logger.info("Entering add_diet function.")
+    try:
+        data = request.json
+        new_diet = data.get('new_diet')
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before addition: {json_content}")
+        diet_data = json.loads(json_content)
+
+        # Check for duplicates
+        if new_diet in diet_data['allergies']:
+            return jsonify({"error": "Diet already exists"}), 400
+
+        # Add the new diet
+        diet_data['diets'].append(new_diet)
+        updated_json = json.dumps(diet_data, indent=2)
+        logger.debug(f"Blob content after update: {updated_json}")
+        blob.upload_from_string(updated_json, content_type='application/json')
+        logger.info("Diet added successfully.")
+
+        return jsonify({"message": "Diet added successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/clear-diet-list', methods=['POST'])
+def clear_diet_list():
+    logger.info("Entering clear_diets_list function.")
+    try:
+        data = request.json
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        conditions_data = json.loads(json_content)
+        logger.debug(f"Blob content before clearing diets: {json_content}")
+
+        # Clear only the diets field while keeping the other fields unchanged
+        conditions_data["diets"] = []
+
+        # Upload the updated data back to Storage
+        updated_json = json.dumps(conditions_data, indent=2)
+        blob.upload_from_string(updated_json, content_type="application/json")
+        logger.info("All diets cleared successfully.")
+
+        return jsonify({"message": "All diets cleared successfully!"})
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+     
+@app.route('/save-spice-tolerance', methods=['POST'])
+def save_spice_tolerance():
+    logger.info("Entering save_spice_tolerance function.")
+
+    try:
+        data = request.json
+        spice_tolerance = data.get('spice_tolerance')
+
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before addition: {json_content}")
+        spice_data = json.loads(json_content)
+
+        # Convert to a list if None
+        if spice_data['spice_tolerance'] is None:
+            spice_data['spice_tolerance'] = []
+
+        # Check for duplicates
+        elif spice_tolerance in spice_data['spice_tolerance']:
+            return jsonify({"error": "Spice tolerance already exists"}), 400
+
+        # Add the new spice tolerance
+        spice_data['spice_tolerance'] = [spice_tolerance]
+        updated_json = json.dumps(spice_data, indent=2)
+        logger.debug(f"Blob content after update: {updated_json}")
+        blob.upload_from_string(updated_json, content_type='application/json')
+
+        logger.info("Spice tolerance edited successfully.")
+        return jsonify({"message": "Spice tolerance edited successfully!"})
+    
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/save-serving-size', methods=['POST'])
+def save_serving_size():
+    logger.info("Entering save_serving_size function.")
+
+    try:
+        data = request.json
+        serving_size = data.get('serving_size')
+
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before addition: {json_content}")
+        size_data = json.loads(json_content)
+
+        # Add serving size header if it doesn't exist
+        if 'serving_size' not in size_data:
+            size_data['serving_size'] = []
+
+        # Check for duplicates
+        elif serving_size in size_data['serving_size']:
+            return jsonify({"error": "Serving size already exists"}), 400
+
+        # Add the new spice tolerance
+        size_data['serving_size'] = [int(serving_size)]
+        updated_json = json.dumps(size_data, indent=2)
+        logger.debug(f"Blob content after update: {updated_json}")
+        blob.upload_from_string(updated_json, content_type='application/json')
+
+        logger.info("Serving size edited successfully.")
+        return jsonify({"message": "Serving size edited successfully!"})
+    
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/save-prep-time', methods=['POST'])
+def save_prep_time():
+    logger.info("Entering save_prep_time function.")
+
+    try:
+        data = request.json
+        prep_time = data.get('prep_time')
+
+        haul_conditions_filepath = data.get('filePath')
+
+        bucket = storage.bucket()
+        blob = ensure_file_exists(bucket, haul_conditions_filepath, default_content={"allergies": [], "diets": [], "spice_tolerance": None, "serving_size": [4], "prep_time": [20]})
+
+        json_content = blob.download_as_text()
+        logger.debug(f"Blob content before addition: {json_content}")
+        time_data = json.loads(json_content)
+
+        # Add prep time header if it doesn't exist
+        if 'prep_time' not in time_data:
+            time_data['prep_time'] = []
+
+        # Check for duplicates
+        elif prep_time in time_data['prep_time']:
+            return jsonify({"error": "Prep time already exists"}), 400
+
+        # Add the new spice tolerance
+        time_data['prep_time'] = [int(prep_time)]
+        updated_json = json.dumps(time_data, indent=2)
+        logger.debug(f"Blob content after update: {updated_json}")
+        blob.upload_from_string(updated_json, content_type='application/json')
+
+        logger.info("Prep time edited successfully.")
+        return jsonify({"message": "Prep time edited successfully!"})
+    
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        return jsonify({"error": str(e)}), 500
+ 
+@app.route('/modify-ingredients', methods=['POST'])
+def modify_ingredients():
+    logger.info("Entering modify_ingredients function.")
+    try:
+        # Parse the incoming request data
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request data is required"}), 400
+
+        # Extract the root path and API key from the request data
+        root_filepath = data.get('rootPath')
+        api_key = os.getenv('API_KEY')  # API key is now managed through environment variables
+        if not api_key:
+            logger.error("API key is missing.")
+            return jsonify({"error": "API key is required"}), 400
+
+        # Define file paths
+        haul_filepath = f"{root_filepath}/haul.json"
+        haul_conditions_path = f"{root_filepath}/haulConditions.json"
+
+        bucket = storage.bucket()
+        haul_blob = bucket.blob(haul_filepath)
+        haul_conditions_blob = bucket.blob(haul_conditions_path)
+
+        # Ensure the haul.json file exists
+        if not haul_blob.exists():
+            logger.error("haul.json file does not exist.")
+            return jsonify({"error": "No ingredients found. Please add items to your fridge first."}), 400
+
+        # Load conditions from haulConditions.json
+        if not haul_conditions_blob.exists():
+            logger.error("haulConditions.json file does not exist.")
+            return jsonify({"error": "Conditions file not found. Please set up dietary preferences and allergies first."}), 400
+
+        try:
+            haul_conditions_data = json.loads(haul_conditions_blob.download_as_text())
+            dietary_preferences = haul_conditions_data.get('diets', [])
+            allergies = haul_conditions_data.get('allergies', [])
+            spiciest_food = haul_conditions_data.get('spice_tolerance', '')
+        except Exception as e:
+            logger.error(f"Error reading haulConditions.json: {e}")
+            return jsonify({"error": f"Error reading conditions file: {e}"}), 500
+
+        # Load the current ingredient list from haul.json
+        try:
+            ingredients_data = json.loads(haul_blob.download_as_text())
+            ingredients_list = ingredients_data.get('ingredients', [])
+        except Exception as e:
+            logger.error(f"Error reading haul.json: {e}")
+            return jsonify({"error": f"Error reading ingredients file: {e}"}), 500
+
+        if not ingredients_list:
+            return jsonify({"error": "No ingredients found in haul.json."}), 400
+
+        # Construct the OpenAI prompt
+        prompt = (
+            f"Edit the ingredient list to fit the following criteria: {', '.join(dietary_preferences)} "
+            f"and free of: {', '.join(allergies)}. "
+            f"Here is the current ingredient list: {', '.join(ingredients_list)}. "
+            f"Additionally, please identify and remove any ingredients spicier than {spiciest_food}. "
+            f"Return the output in a valid JSON format, and only include the updated list of ingredients under an 'ingredients' key."
+        )
+
+        # Call OpenAI API
+        client = OpenAI(api_key=api_key)
+        response = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="gpt-4o-mini"
+        )
+
+        # Handle OpenAI response
+        if not response or not response.choices or not response.choices[0].message.content:
+            logger.error("OpenAI API returned an invalid response.")
+            return jsonify({"error": "Failed to get a valid response from OpenAI."}), 500
+
+        generated_text = response.choices[0].message.content.strip("```json").strip("```").strip()
+        logger.debug(f"Generated text from OpenAI: {generated_text}")
+
+        # Parse the generated JSON
+        try:
+            new_ingredients = json.loads(generated_text).get('ingredients', [])
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse OpenAI response as JSON: {e}")
+            return jsonify({"error": "OpenAI response is not valid JSON."}), 500
+
+        # Save the updated ingredient list back to haul.json
+        updated_ingredients = {"ingredients": new_ingredients}
+        haul_blob.upload_from_string(json.dumps(updated_ingredients, indent=2), content_type='application/json')
+        logger.info("Updated ingredients saved successfully.")
+
+        return jsonify({"message": "Ingredient list modified successfully!", "ingredients": new_ingredients}), 200
+
+    except Exception as e:
+        logger.exception("An error occurred during ingredient modification.")
+        return jsonify({"error": str(e)}), 500
+ 
 # if __name__ == '__main__':
     # app.run(debug=True))
     # serve(app, host='0.0.0.0', port=8080)
