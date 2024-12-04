@@ -41,6 +41,62 @@
       {
         "source": "/get-recipe",
         "function": "flask_app"
+      },
+      {
+        "source": "/get-allergy-list",
+        "function": "flask_app"
+      },
+      {
+        "source": "/save-allergy",
+        "function": "flask_app"
+      },
+      {
+        "source": "/delete-allergy",
+        "function": "flask_app"
+      },
+      {
+        "source": "/add-allergy",
+        "function": "flask_app"
+      },
+      {
+        "source": "/clear-allergy-list",
+        "function": "flask_app"
+      },
+      {
+        "source": "/get-diet-list",
+        "function": "flask_app"
+      },
+      {
+        "source": "/save-diet",
+        "function": "flask_app"
+      },
+      {
+        "source": "/delete-diet",
+        "function": "flask_app"
+      },
+      {
+        "source": "/add-diet",
+        "function": "flask_app"
+      },
+      {
+        "source": "/clear-diet-list",
+        "function": "flask_app"
+      },
+      {
+        "source": "/modify-ingredients",
+        "function": "flask_app"
+      },
+      {
+        "source": "/save-spice-tolerance",
+        "function": "flask_app"
+      },
+      {
+        "source": "/save-serving-size",
+        "function": "flask_app"
+      },
+      {
+        "source": "/save-prep-time",
+        "function": "flask_app"
       }
     ]
   },
@@ -63,7 +119,19 @@
     "ui": {
       "enabled": true
     },
-    "singleProjectMode": true
+    "singleProjectMode": true,
+    "database": {
+      "port": 9000
+    },
+    "pubsub": {
+      "port": 8085
+    },
+    "eventarc": {
+      "port": 9299
+    },
+    "tasks": {
+      "port": 9499
+    }
   },
   "functions": {
     "source": "functions",
@@ -75,7 +143,8 @@
       ".git",
       "firebase-debug.log",
       "firebase-debug.*.log",
-      "*.local"
+      "*.local",
+      "venv"
     ]
   },
   "storage": {
